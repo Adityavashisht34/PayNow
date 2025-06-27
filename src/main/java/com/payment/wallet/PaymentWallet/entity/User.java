@@ -16,8 +16,9 @@ import java.util.*;
 public class User {
     private ObjectId userId;
     private ObjectId userAccountId;
-    private String firstName;
-    private String lastName;
+    private String fullName;
+    private String email;
+    private String password;
 
     @DBRef
     Address addressId = null;
