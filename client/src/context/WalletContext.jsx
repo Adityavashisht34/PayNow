@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-
+import axios from 'axios';
 const WalletContext = createContext();
 
 const initialState = {
@@ -197,23 +197,37 @@ function walletReducer(state, action) {
 
 export function WalletProvider({ children }) {
   const [state, dispatch] = useReducer(walletReducer, initialState);
-
-  const login = (email, password) => {
-    const user = state.users.find(u => u.email === email && u.password === password);
-    if (user) {
-      dispatch({ 
-        type: 'LOGIN', 
-        payload: {
-          id: user.id,
-          name: `${user.firstName} ${user.lastName}`,
-          email: user.email,
-          avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2'
-        }
+  const user = null
+  const login = async (email, password) => {
+    try {
+      const res = await axios.post("http://localhost:8080/user/find-user", {
+        email,
+        password
       });
-      return true;
+  
+      const user = res.data;
+      console.log(user)
+  
+      if (user && user.id) {
+        dispatch({ 
+          type: 'LOGIN', 
+          payload: {
+            id: user.userId,
+            name: `${user.firstName} ${user.lastName}`,
+            email: user.email,
+            avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2'
+          }
+        });
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
     }
-    return false;
   };
+  
 
   const signup = (userData) => {
     // Check if user already exists
