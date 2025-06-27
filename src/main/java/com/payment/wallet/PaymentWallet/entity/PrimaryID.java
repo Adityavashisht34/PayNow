@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "userAccountID")
 @Data
 public class PrimaryID {
-    @NonNull
-    private ObjectId userId;
-    private ObjectId
+//    @NonNull
+//    private ObjectId userId;
+//    private ObjectId
 }
