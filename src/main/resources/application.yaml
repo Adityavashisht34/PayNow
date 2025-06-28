@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      database: paymentDBDev
+      uri: mongodb+srv://admin:admin@paymentdbdev.rjnuxoc.mongodb.net/?retryWrites=true&w=majority&appName=PaymentDBDev
