@@ -13,106 +13,12 @@ const initialState = {
   },
   balance: 2450.75,
   transactions: [
-    {
-      id: 'tx001',
-      type: 'received',
-      amount: 500.00,
-      from: 'Sarah Wilson',
-      to: 'John Doe',
-      date: new Date('2024-01-15T14:30:00Z'),
-      status: 'completed',
-      description: 'Payment for freelance work',
-      category: 'income'
-    },
-    {
-      id: 'tx002',
-      type: 'sent',
-      amount: 75.25,
-      from: 'John Doe',
-      to: 'Coffee Shop',
-      date: new Date('2024-01-15T09:15:00Z'),
-      status: 'completed',
-      description: 'Coffee and breakfast',
-      category: 'food'
-    },
-    {
-      id: 'tx003',
-      type: 'received',
-      amount: 1200.00,
-      from: 'Tech Corp Ltd',
-      to: 'John Doe',
-      date: new Date('2024-01-14T16:45:00Z'),
-      status: 'completed',
-      description: 'Monthly salary',
-      category: 'salary'
-    },
-    {
-      id: 'tx004',
-      type: 'sent',
-      amount: 25.50,
-      from: 'John Doe',
-      to: 'Uber',
-      date: new Date('2024-01-14T12:20:00Z'),
-      status: 'completed',
-      description: 'Ride to downtown',
-      category: 'transport'
-    },
-    {
-      id: 'tx005',
-      type: 'sent',
-      amount: 150.00,
-      from: 'John Doe',
-      to: 'Electric Company',
-      date: new Date('2024-01-13T10:00:00Z'),
-      status: 'completed',
-      description: 'Monthly electricity bill',
-      category: 'utilities'
-    }
   ],
   contacts: [
-    {
-      id: 'c001',
-      name: 'Sarah Wilson',
-      email: 'sarah.wilson@email.com',
-      phone: '+1 234 567 8901',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      favorite: true
-    },
-    {
-      id: 'c002',
-      name: 'Mike Johnson',
-      email: 'mike.johnson@email.com',
-      phone: '+1 234 567 8902',
-      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      favorite: true
-    },
-    {
-      id: 'c003',
-      name: 'Emma Davis',
-      email: 'emma.davis@email.com',
-      phone: '+1 234 567 8903',
-      avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      favorite: false
-    },
-    {
-      id: 'c004',
-      name: 'David Brown',
-      email: 'david.brown@email.com',
-      phone: '+1 234 567 8904',
-      avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      favorite: false
-    }
   ],
   currentView: 'dashboard',
   notifications: [],
   users: [
-    {
-      id: 'user1',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      password: 'password123'
-    }
   ]
 };
 
@@ -206,9 +112,8 @@ export function WalletProvider({ children }) {
       });
   
       const user = res.data;
-      console.log(user)
   
-      if (user && user.id) {
+      if (user && user.userId) {
         dispatch({ 
           type: 'LOGIN', 
           payload: {

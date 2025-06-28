@@ -12,12 +12,46 @@ import {
   Edit2,
   Settings
 } from 'lucide-react';
+import axios from 'axios';
 
 export default function Profile() {
   const { user, logout, setView } = useWallet();
-  const [showPinChange, setShowPinChange] = useState(false);
-  const [newPin, setNewPin] = useState('');
-  const [confirmPin, setConfirmPin] = useState('');
+  const [showPasswordChange, setPasswordChange] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const changePassword = async (e) => {
+    e.preventDefault();
+
+    if (!newPassword || newPassword.length < 4) {
+      alert("Password must be at least 4 characters");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await axios.patch("http://localhost:8080/user/update-password", {
+        password: newPassword,
+        email: user.email
+      });
+
+      if (response.status === 200) {
+        alert("Password updated successfully");
+        setPasswordChange(false);
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        alert("Something went wrong");
+      }
+    } catch (error) {
+      console.error("Password update failed:", error);
+      alert("Failed to update password");
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -37,17 +71,14 @@ export default function Profile() {
       title: 'Security',
       icon: Shield,
       items: [
-        { label: 'Change PIN', value: '••••', icon: Shield, action: () => setShowPinChange(true) },
-        { label: 'Two-Factor Authentication', value: 'Enabled', icon: Shield },
-        { label: 'Login Activity', value: 'View History', icon: Shield }
+        { label: 'Change Password', value: '••••', icon: Shield, action: () => setPasswordChange(true) },
       ]
     },
     {
       title: 'Preferences',
       icon: Settings,
       items: [
-        { label: 'Notifications', value: 'Enabled', icon: Bell },
-        { label: 'Currency', value: 'USD ($)', icon: CreditCard },
+        { label: 'Currency', value: 'INR (₹)', icon: CreditCard },
         { label: 'Language', value: 'English', icon: Settings }
       ]
     }
@@ -65,7 +96,6 @@ export default function Profile() {
         <h2 className="text-2xl font-bold text-gray-800">Profile</h2>
       </div>
 
-      {/* Profile Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white">
         <div className="flex items-center space-x-4">
           <div className="relative">
@@ -86,7 +116,6 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Profile Sections */}
       {profileSections.map((section, index) => (
         <div key={index} className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="flex items-center space-x-3 mb-4">
@@ -118,65 +147,66 @@ export default function Profile() {
         </div>
       ))}
 
-      {/* PIN Change Modal */}
-      {showPinChange && (
+      {showPasswordChange && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Change PIN</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  New PIN
-                </label>
-                <input
-                  type="password"
-                  value={newPin}
-                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  placeholder="••••"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-widest"
-                  maxLength="4"
-                />
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Change Password</h3>
+            <form onSubmit={changePassword}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Min 4 characters"
+                    maxLength={16}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm Password
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm Password"
+                    maxLength={16}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm PIN
-                </label>
-                <input
-                  type="password"
-                  value={confirmPin}
-                  onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  placeholder="••••"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-widest"
-                  maxLength="4"
-                />
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPasswordChange(false);
+                    setNewPassword('');
+                    setConfirmPassword('');
+                  }}
+                  className="flex-1 bg-gray-100 text-gray-800 py-3 px-4 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={newPassword.length < 4 || newPassword !== confirmPassword}
+                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+                >
+                  Update Password
+                </button>
               </div>
-            </div>
-            
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowPinChange(false);
-                  setNewPin('');
-                  setConfirmPin('');
-                }}
-                className="flex-1 bg-gray-100 text-gray-800 py-3 px-4 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                disabled={newPin.length !== 4 || newPin !== confirmPin}
-                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
-              >
-                Update PIN
-              </button>
-            </div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* Logout Button */}
       <button
         onClick={handleLogout}
         className="w-full bg-red-50 hover:bg-red-100 text-red-600 py-4 px-4 rounded-xl font-semibold transition-colors flex items-center justify-center space-x-2 border border-red-200"

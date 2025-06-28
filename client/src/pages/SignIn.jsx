@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useWallet } from '../context/WalletContext';
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function SignIn() {
   const { login } = useWallet();
@@ -21,10 +19,9 @@ export default function SignIn() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Validate form
+
     if (!formData.email || !formData.password) {
       setErrors({
         email: !formData.email ? 'Email is required' : '',
@@ -32,19 +29,20 @@ export default function SignIn() {
       });
       return;
     }
-  
-    setLoading(true);
-  
-    const success =  login(formData.email, formData.password); 
 
-    console.log(success)
-    if (success) {
-      navigate('/dashboard'); 
-    } else {
-      setErrors({ password: 'Invalid email or password' });
+    setLoading(true);
+    try {
+      const success = await login(formData.email, formData.password);
+      if (success) {
+        navigate('/dashboard');
+      } else {
+        setErrors({ password: 'Invalid email or password' });
+      }
+    } catch (error) {
+      setErrors({ password: 'Server error. Please try again later.' });
+    } finally {
+      setLoading(false);
     }
-  
-    setLoading(false);
   };
 
   return (

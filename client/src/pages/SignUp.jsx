@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function SignUp() {
   const { signup, login } = useWallet();
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', password: '', mobile: '' });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,33 +27,47 @@ export default function SignUp() {
     if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     if (!formData.password || formData.password.length < 6) newErrors.password = 'Password must be 6+ characters';
+    if (!formData.mobile || formData.mobile.length < 10) newErrors.mobile = 'Mobile must be 10 digits';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    axios.get("http://localhost:8080/user/")
-    .then((res)=>{
-      const userId = res.data.body[0]
-      const accountid = res.data.body[1]
-      axios.post("http://localhost:8080/user/save-user",{
-        "firstName": formData.firstName,
-        "lastName": formData.lastName,
-        "email": formData.email,
-        "password": formData.password,
-        "userAccountId": accountid,
-        "userId": userId
-      })
-      .then(
-        login(formData.email, formData.password)
-      )
-      .catch((err)=>{
-        setErrors({ email: 'Email already exists' });
-      })
-    })
+  
+    setLoading(true);
+  
+    try {
+      const res = await axios.get("http://localhost:8080/user/");
+      const userId = res.data.body[0];
+      const accountid = res.data.body[1];
+  
+      await axios.post("http://localhost:8080/user/save-user", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        userAccountId: accountid,
+        userId: userId,
+        mobile: formData.mobile
+      });
+  
+      const success = await login(formData.email, formData.password);
+      if (success) {
+        navigate('/dashboard');
+      } else {
+        setErrors({ email: 'Login failed after signup' });
+      }
+  
+    } catch (err) {
+      console.error(err);
+      setErrors({ email: 'Email already exists or server error' });
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 p-4">
@@ -68,6 +84,10 @@ export default function SignUp() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
               <input name="lastName" value={formData.lastName} onChange={handleChange} className="w-full px-4 py-3 border rounded-xl" />
               {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mobile</label>
+              <input name="mobile" value={formData.mobile} onChange={handleChange} className="w-full px-4 py-3 border rounded-xl" required/>
             </div>
           </div>
 
