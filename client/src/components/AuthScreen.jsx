@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { Lock, Eye, EyeOff, User, Mail, ArrowRight } from 'lucide-react';
+import axios from 'axios';
 
 export default function AuthScreen() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -65,8 +66,12 @@ export default function AuthScreen() {
 
     setLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    axios.get("http://localhost:8080/user/")
+    .then(
+      res=>{
+        console.log(res.data)
+      }
+    )
 
     try {
       if (isSignUp) {
