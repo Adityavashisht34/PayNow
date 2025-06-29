@@ -6,10 +6,15 @@ import SignUp from './pages/SignUp';
 import DesktopLayout from './components/DesktopLayout';
 import MobileLayout from './components/MobileLayout';
 import Dashboard from './components/Dashboard';
+import Profile from './components/Profile';
+import ReceiveMoney from './components/ReceiveMoney';
+import SendMoney from './components/SendMoney';
+import TransactionHistory from './components/TransactionHistory';
+import Settings from './components/Settings';
 
 function AppContent() {
   const { user } = useWallet();
-  const isDesktop = window.innerWidth >= 1024;
+  const { layoutMode } = useWallet();
 
   if (!user.isAuthenticated) {
     return (
@@ -23,21 +28,30 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route
-        path="/dashboard"
-        element={
-          isDesktop ? (
-            <DesktopLayout>
-              <Dashboard />
-            </DesktopLayout>
-          ) : (
-            <MobileLayout>
-              <Dashboard />
-            </MobileLayout>
-          )
-        }
-      />
-      <Route path="*" element={<Navigate to="/dashboard" />} />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      {layoutMode === 'desktop' ? (
+        <Route path="/" element={<DesktopLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="receive" element={<ReceiveMoney />} />
+          <Route path="send" element={<SendMoney />} />
+          <Route path="history" element={<TransactionHistory />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="*" element={<Navigate to="/dashboard" />} />
+        </Route>
+      ) : (
+        <Route path="/" element={<MobileLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="receive" element={<ReceiveMoney />} />
+          <Route path="send" element={<SendMoney />} />
+          <Route path="history" element={<TransactionHistory />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="*" element={<Navigate to="/dashboard" />} />
+        </Route>
+      )}
     </Routes>
   );
 }

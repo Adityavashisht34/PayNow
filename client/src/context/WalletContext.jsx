@@ -2,21 +2,44 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
 const WalletContext = createContext();
 
+function getInitialUser() {
+  try {
+    const user = localStorage.getItem('user');
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      if (parsedUser && parsedUser.id) {
+        return parsedUser;
+      }
+    }
+    return {
+      id: null,
+      name: '',
+      email: '',
+      phone: '+1 234 567 8900',
+      avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
+      isAuthenticated: false
+    };
+  } catch {
+    return {
+      id: null,
+      name: '',
+      email: '',
+      phone: '+1 234 567 8900',
+      avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
+      isAuthenticated: false
+    };
+  }
+}
+
 const initialState = {
-  user: {
-    id: null,
-    name: '',
-    email: '',
-    phone: '+1 234 567 8900',
-    avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-    isAuthenticated: false
-  },
-  balance: 2450.75,
+  user: getInitialUser(),
+  balance: 0,
   transactions: [
   ],
   contacts: [
   ],
   currentView: 'dashboard',
+  layoutMode: 'desktop',
   notifications: [],
   users: [
   ]
@@ -25,15 +48,18 @@ const initialState = {
 function walletReducer(state, action) {
   switch (action.type) {
     case 'LOGIN':
+      const loggedInUser = {
+        ...state.user,
+        ...action.payload,
+        isAuthenticated: true
+      };
+      localStorage.setItem('user', JSON.stringify(loggedInUser));
       return {
         ...state,
-        user: { 
-          ...state.user, 
-          ...action.payload,
-          isAuthenticated: true 
-        }
+        user: loggedInUser
       };
     case 'LOGOUT':
+      localStorage.removeItem('user');
       return {
         ...state,
         user: { 
@@ -101,7 +127,7 @@ function walletReducer(state, action) {
   }
 }
 
-export function WalletProvider({ children }) {
+function WalletProvider({ children }) {
   const [state, dispatch] = useReducer(walletReducer, initialState);
   const user = null
   const login = async (email, password) => {
@@ -167,7 +193,7 @@ export function WalletProvider({ children }) {
       addNotification({
         id: Date.now().toString(),
         type: 'success',
-        message: `Successfully sent $${amount} to ${recipient}`,
+        message: `Successfully sent ₹${amount} to ${recipient}`,
         timestamp: new Date()
       });
       
@@ -185,13 +211,17 @@ export function WalletProvider({ children }) {
     addNotification({
       id: Date.now().toString(),
       type: 'success',
-      message: `Received $${amount} from ${sender}`,
+      message: `Received ₹${amount} from ${sender}`,
       timestamp: new Date()
     });
   };
 
   const setView = (view) => {
     dispatch({ type: 'SET_VIEW', payload: view });
+  };
+
+  const setLayoutMode = (mode) => {
+    dispatch({ type: 'SET_LAYOUT_MODE', payload: mode });
   };
 
   const addNotification = (notification) => {
@@ -209,6 +239,7 @@ export function WalletProvider({ children }) {
     sendMoney,
     receiveMoney,
     setView,
+    setLayoutMode,
     addNotification,
     dispatch
   };
@@ -227,3 +258,5 @@ export function useWallet() {
   }
   return context;
 }
+
+export { WalletProvider };

@@ -1,10 +1,6 @@
 import React from 'react';
 import { useWallet } from '../context/WalletContext';
-import Dashboard from './Dashboard';
-import SendMoney from './SendMoney';
-import ReceiveMoney from './ReceiveMoney';
-import TransactionHistory from './TransactionHistory';
-import Profile from './Profile';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import NotificationSystem from './NotificationSystem';
 import { 
   Home, 
@@ -18,30 +14,19 @@ import {
 } from 'lucide-react';
 
 export default function DesktopLayout() {
-  const { user, currentView, setView, logout } = useWallet();
+  const { user, logout, setLayoutMode } = useWallet();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const sidebarItems = [
-    { id: 'dashboard', icon: Home, label: 'Dashboard' },
-    { id: 'send', icon: Send, label: 'Send Money' },
-    { id: 'receive', icon: Download, label: 'Receive Money' },
-    { id: 'history', icon: Clock, label: 'Transaction History' },
-    { id: 'profile', icon: User, label: 'Profile' }
+    { id: 'dashboard', icon: Home, label: 'Dashboard', path: '/dashboard' },
+    { id: 'send', icon: Send, label: 'Send Money', path: '/send' },
+    { id: 'receive', icon: Download, label: 'Receive Money', path: '/receive' },
+    { id: 'history', icon: Clock, label: 'Transaction History', path: '/history' },
+    { id: 'profile', icon: User, label: 'Profile', path: '/profile' }
   ];
 
-  const renderMainContent = () => {
-    switch (currentView) {
-      case 'send':
-        return <SendMoney />;
-      case 'receive':
-        return <ReceiveMoney />;
-      case 'history':
-        return <TransactionHistory />;
-      case 'profile':
-        return <Profile />;
-      default:
-        return <Dashboard />;
-    }
-  };
+  const currentPath = location.pathname;
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -81,15 +66,15 @@ export default function DesktopLayout() {
             {sidebarItems.map((item) => (
               <li key={item.id}>
                 <button
-                  onClick={() => setView(item.id)}
+                  onClick={() => navigate(item.path)}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                    currentView === item.id
+                    currentPath === item.path
                       ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
                   }`}
                 >
                   <item.icon className={`w-5 h-5 ${
-                    currentView === item.id ? 'text-blue-600' : 'text-gray-400'
+                    currentPath === item.path ? 'text-blue-600' : 'text-gray-400'
                   }`} />
                   <span className="font-medium">{item.label}</span>
                 </button>
@@ -101,9 +86,24 @@ export default function DesktopLayout() {
         {/* Bottom Actions */}
         <div className="p-4 border-t border-gray-200">
           <div className="space-y-2">
-            <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-colors">
+            <button
+              onClick={() => navigate('/settings')}
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-colors"
+            >
               <Settings className="w-5 h-5 text-gray-400" />
               <span className="font-medium">Settings</span>
+            </button>
+            <button
+              onClick={() => {
+                if (user.layoutMode === 'desktop') {
+                  setLayoutMode('mobile');
+                } else {
+                  setLayoutMode('desktop');
+                }
+              }}
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+            >
+              <span className="font-medium">Toggle Mobile/Desktop View</span>
             </button>
             <button 
               onClick={logout}
@@ -123,14 +123,14 @@ export default function DesktopLayout() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 capitalize">
-                {currentView === 'dashboard' ? 'Dashboard' : currentView.replace(/([A-Z])/g, ' $1')}
+                {currentPath === '/dashboard' ? 'Dashboard' : currentPath.replace('/', '')}
               </h2>
               <p className="text-gray-600">
-                {currentView === 'dashboard' && 'Overview of your financial activity'}
-                {currentView === 'send' && 'Transfer money to contacts'}
-                {currentView === 'receive' && 'Request payments from others'}
-                {currentView === 'history' && 'View all your transactions'}
-                {currentView === 'profile' && 'Manage your account settings'}
+                {currentPath === '/dashboard' && 'Overview of your financial activity'}
+                {currentPath === '/send' && 'Transfer money to contacts'}
+                {currentPath === '/receive' && 'Request payments from others'}
+                {currentPath === '/history' && 'View all your transactions'}
+                {currentPath === '/profile' && 'Manage your account settings'}
               </p>
             </div>
             
@@ -158,7 +158,7 @@ export default function DesktopLayout() {
         {/* Main Content Area */}
         <main className="flex-1 overflow-auto">
           <div className="p-6">
-            {renderMainContent()}
+            <Outlet />
           </div>
         </main>
       </div>
