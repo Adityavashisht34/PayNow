@@ -11,9 +11,11 @@ import {
   ArrowDownLeft,
   Clock
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
-  const { balance, transactions, setView, user } = useWallet();
+  const { balance, transactions, user } = useWallet();
+  const navigate = useNavigate();
   const [showBalance, setShowBalance] = React.useState(true);
 
   const recentTransactions = transactions.slice(0, 5);
@@ -29,26 +31,25 @@ export default function Dashboard() {
     {
       icon: Send,
       label: 'Send Money',
-      action: () => setView('send'),
+      action: () => navigate('/send'),
       color: 'bg-blue-500 hover:bg-blue-600'
     },
     {
       icon: Download,
       label: 'Receive',
-      action: () => setView('receive'),
+      action: () => navigate('/receive'),
       color: 'bg-green-500 hover:bg-green-600'
     },
     {
       icon: Clock,
       label: 'History',
-      action: () => setView('history'),
+      action: () => navigate('/history'),
       color: 'bg-purple-500 hover:bg-purple-600'
     }
   ];
 
   return (
     <div className="space-y-6">
-      {/* Welcome Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -78,7 +79,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Actions */}
       <div>
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-3 gap-4">
@@ -127,7 +127,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-800">Recent Transactions</h3>
           <button 
-            onClick={() => setView('history')}
+            onClick={() => navigate('/history')}
             className="text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
             View All

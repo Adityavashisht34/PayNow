@@ -10,9 +10,11 @@ import {
   Calendar,
   TrendingUp
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function TransactionHistory() {
-  const { transactions, setView } = useWallet();
+  const { transactions } = useWallet();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all'); // all, sent, received
   const [filterPeriod, setFilterPeriod] = useState('all'); // all, today, week, month
@@ -75,7 +77,7 @@ export default function TransactionHistory() {
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
         <button 
-          onClick={() => setView('dashboard')}
+          onClick={() => navigate('/dashboard')}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />

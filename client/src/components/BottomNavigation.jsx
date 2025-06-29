@@ -1,6 +1,6 @@
 import React from 'react';
 import { useWallet } from '../context/WalletContext';
-import { Home, Send, Download, Clock, User } from 'lucide-react';
+import { Home, Send, Download, Clock, User, Settings } from 'lucide-react';
 
 export default function BottomNavigation() {
   const { currentView, setView } = useWallet();
@@ -10,7 +10,8 @@ export default function BottomNavigation() {
     { id: 'send', icon: Send, label: 'Send' },
     { id: 'receive', icon: Download, label: 'Receive' },
     { id: 'history', icon: Clock, label: 'History' },
-    { id: 'profile', icon: User, label: 'Profile' }
+    { id: 'profile', icon: User, label: 'Profile' },
+    { id: 'settings', icon: Settings, label: 'Settings' }
   ];
 
   return (

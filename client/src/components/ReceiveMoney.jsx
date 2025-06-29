@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { ArrowLeft, QrCode, Copy, Check, Share } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function ReceiveMoney() {
-  const { user, setView } = useWallet();
+  const { user } = useWallet();
+  const navigate = useNavigate();
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [copied, setCopied] = useState(false);
@@ -39,7 +41,7 @@ export default function ReceiveMoney() {
       try {
         await navigator.share({
           title: 'Payment Request',
-          text: `${user.name} is requesting ${amount ? `$${amount}` : 'a payment'}${description ? ` for ${description}` : ''}`,
+          text: `${user.name} is requesting ${amount ? `₹${amount}` : 'a payment'}${description ? ` for ${description}` : ''}`,
           url: paymentLink
         });
       } catch (err) {
@@ -54,7 +56,7 @@ export default function ReceiveMoney() {
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
         <button 
-          onClick={() => setView('dashboard')}
+          onClick={() => navigate('/dashboard')}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -83,7 +85,7 @@ export default function ReceiveMoney() {
             Amount (optional)
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl">$</span>
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl">₹</span>
             <input
               type="text"
               value={amount}
