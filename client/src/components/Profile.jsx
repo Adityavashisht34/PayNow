@@ -6,50 +6,61 @@ import {
   Phone, 
   Mail, 
   Shield, 
-  Bell, 
-  CreditCard, 
+  CreditCard,
   LogOut,
   Edit2,
   Settings
 } from 'lucide-react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { userApi } from '../api/simpleApi';
+import { isValidPassword } from '../utils/simpleValidation';
 
 export default function Profile() {
-  const { user, logout, setView } = useWallet();
+  const { user, logout } = useWallet();
+  const navigate = useNavigate();
   const [showPasswordChange, setPasswordChange] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const changePassword = async (e) => {
     e.preventDefault();
 
-    if (!newPassword || newPassword.length < 4) {
-      alert("Password must be at least 4 characters");
+    // Simple validation
+    const newErrors = {};
+    if (!isValidPassword(newPassword)) {
+      newErrors.newPassword = "Password must be at least 6 characters";
+    }
+    if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+    setLoading(true);
 
     try {
-      const response = await axios.patch("http://localhost:8080/user/update-password", {
-        password: newPassword,
-        email: user.email
+      const response = await userApi.updatePassword({
+        email: user.email,
+        newPassword: newPassword
       });
 
-      if (response.status === 200) {
+      if (response.success) {
         alert("Password updated successfully");
         setPasswordChange(false);
         setNewPassword('');
         setConfirmPassword('');
-      } else {
-        alert("Something went wrong");
+        setErrors({});
       }
     } catch (error) {
       console.error("Password update failed:", error);
-      alert("Failed to update password");
+      alert(error.message || "Failed to update password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,8 +98,8 @@ export default function Profile() {
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <button 
-          onClick={() => setView('dashboard')}
+        <button
+          onClick={() => navigate('/dashboard')}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -99,9 +110,9 @@ export default function Profile() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white">
         <div className="flex items-center space-x-4">
           <div className="relative">
-            <img 
-              src={user.avatar} 
-              alt={user.name} 
+            <img
+              src={user.avatar}
+              alt={user.name}
               className="w-20 h-20 rounded-full border-4 border-white"
             />
             <button className="absolute bottom-0 right-0 bg-white text-blue-600 p-2 rounded-full hover:bg-gray-100 transition-colors">
@@ -122,7 +133,7 @@ export default function Profile() {
             <section.icon className="w-6 h-6 text-gray-600" />
             <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
           </div>
-          
+
           <div className="space-y-3">
             {section.items.map((item, itemIndex) => (
               <div key={itemIndex} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
@@ -133,7 +144,7 @@ export default function Profile() {
                 <div className="flex items-center space-x-2">
                   <span className="text-gray-600">{item.value}</span>
                   {item.action && (
-                    <button 
+                    <button
                       onClick={item.action}
                       className="text-blue-600 hover:text-blue-700"
                     >
@@ -147,6 +158,7 @@ export default function Profile() {
         </div>
       ))}
 
+      {/* Simple Password Change Modal */}
       {showPasswordChange && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
@@ -160,13 +172,20 @@ export default function Profile() {
                   <input
                     type="password"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Min 4 characters"
-                    maxLength={16}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => {
+                      setNewPassword(e.target.value);
+                      if (errors.newPassword) {
+                        setErrors(prev => ({ ...prev, newPassword: '' }));
+                      }
+                    }}
+                    placeholder="Min 6 characters"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.newPassword ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   />
+                  {errors.newPassword && <p className="text-red-500 text-sm mt-1">{errors.newPassword}</p>}
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Confirm Password
@@ -174,11 +193,18 @@ export default function Profile() {
                   <input
                     type="password"
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      if (errors.confirmPassword) {
+                        setErrors(prev => ({ ...prev, confirmPassword: '' }));
+                      }
+                    }}
                     placeholder="Confirm Password"
-                    maxLength={16}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   />
+                  {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
                 </div>
               </div>
 
@@ -189,6 +215,7 @@ export default function Profile() {
                     setPasswordChange(false);
                     setNewPassword('');
                     setConfirmPassword('');
+                    setErrors({});
                   }}
                   className="flex-1 bg-gray-100 text-gray-800 py-3 px-4 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
                 >
@@ -196,10 +223,10 @@ export default function Profile() {
                 </button>
                 <button
                   type="submit"
-                  disabled={newPassword.length < 4 || newPassword !== confirmPassword}
+                  disabled={loading || !newPassword || !confirmPassword}
                   className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
                 >
-                  Update Password
+                  {loading ? 'Updating...' : 'Update Password'}
                 </button>
               </div>
             </form>
