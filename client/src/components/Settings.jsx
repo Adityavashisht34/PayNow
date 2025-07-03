@@ -1,25 +1,93 @@
 import React from 'react';
 import { useWallet } from '../context/WalletContext';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Monitor, Smartphone, Globe, Bell, Shield, CreditCard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Settings() {
-  const { layoutMode, setLayoutMode, setView } = useWallet();
+  const { layoutMode, setLayoutMode } = useWallet();
+  const navigate = useNavigate();
 
   const toggleLayoutMode = () => {
     if (layoutMode === 'desktop') {
       setLayoutMode('mobile');
-      setView('dashboard');
     } else {
       setLayoutMode('desktop');
-      setView('dashboard');
     }
   };
+
+  const settingsSections = [
+    {
+      title: 'Display',
+      icon: Monitor,
+      items: [
+        {
+          label: 'Layout Mode',
+          value: layoutMode === 'desktop' ? 'Desktop' : 'Mobile',
+          action: toggleLayoutMode,
+          description: 'Switch between desktop and mobile layouts'
+        }
+      ]
+    },
+    {
+      title: 'Preferences',
+      icon: Globe,
+      items: [
+        {
+          label: 'Language',
+          value: 'English',
+          description: 'Change app language'
+        },
+        {
+          label: 'Currency',
+          value: 'INR (₹)',
+          description: 'Default currency for transactions'
+        },
+        {
+          label: 'Theme',
+          value: 'Light',
+          description: 'App appearance theme'
+        }
+      ]
+    },
+    {
+      title: 'Notifications',
+      icon: Bell,
+      items: [
+        {
+          label: 'Transaction Alerts',
+          value: 'Enabled',
+          description: 'Get notified for all transactions'
+        },
+        {
+          label: 'Email Notifications',
+          value: 'Enabled',
+          description: 'Receive updates via email'
+        }
+      ]
+    },
+    {
+      title: 'Security',
+      icon: Shield,
+      items: [
+        {
+          label: 'Two-Factor Authentication',
+          value: 'Disabled',
+          description: 'Add extra security to your account'
+        },
+        {
+          label: 'Biometric Login',
+          value: 'Not Available',
+          description: 'Use fingerprint or face ID'
+        }
+      ]
+    }
+  ];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <button 
-          onClick={() => setView('dashboard')}
+        <button
+          onClick={() => navigate('/dashboard')}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -27,14 +95,83 @@ export default function Settings() {
         <h2 className="text-2xl font-bold text-gray-800">Settings</h2>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Layout Mode</h3>
-        <button
-          onClick={toggleLayoutMode}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Switch to {layoutMode === 'desktop' ? 'Mobile' : 'Desktop'} View
-        </button>
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white">
+        <div className="flex items-center space-x-4">
+          <div className="bg-white/20 p-3 rounded-full">
+            <Monitor className="w-8 h-8" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold">App Settings</h3>
+            <p className="text-purple-100">Customize your PayWallet experience</p>
+          </div>
+        </div>
+      </div>
+
+      {settingsSections.map((section, index) => (
+        <div key={index} className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center space-x-3 mb-4">
+            <section.icon className="w-6 h-6 text-gray-600" />
+            <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
+          </div>
+
+          <div className="space-y-4">
+            {section.items.map((item, itemIndex) => (
+              <div key={itemIndex} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700 font-medium">{item.label}</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-600">{item.value}</span>
+                      {item.action && (
+                        <button
+                          onClick={item.action}
+                          className="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+                        >
+                          Change
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {item.description && (
+                    <p className="text-sm text-gray-500 mt-1">{item.description}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+        <div className="flex items-center space-x-3 mb-3">
+          <CreditCard className="w-6 h-6 text-blue-600" />
+          <h3 className="text-lg font-semibold text-gray-800">Quick Actions</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <button
+            onClick={() => navigate('/profile')}
+            className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all text-left"
+          >
+            <h4 className="font-medium text-gray-800">Edit Profile</h4>
+            <p className="text-sm text-gray-500">Update your personal information</p>
+          </button>
+
+          <button
+            onClick={() => navigate('/history')}
+            className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all text-left"
+          >
+            <h4 className="font-medium text-gray-800">Transaction History</h4>
+            <p className="text-sm text-gray-500">View all your transactions</p>
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 rounded-xl p-6 text-center">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">PayWallet v1.0.0</h3>
+        <p className="text-sm text-gray-500">
+          Your secure digital payment solution
+        </p>
       </div>
     </div>
   );
