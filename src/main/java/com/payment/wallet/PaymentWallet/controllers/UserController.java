@@ -32,4 +32,25 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody User user){
             return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
+
+    @Transactional
+    @PostMapping("/find-user")
+    public ResponseEntity<?> findUser(@RequestBody User user){
+        try{
+           return userService.findUserByEmail(user.getEmail(), user.getPassword());
+        }
+        catch (Exception e){
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
+    @Transactional
+    @PatchMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@RequestBody User user){
+        try{
+            return userService.updatePassword(user.getEmail(),user.getPassword());
+        }
+        catch (Exception e){
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
 }

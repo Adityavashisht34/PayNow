@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { formatCurrency } from '../utils/formatters';
 import { ArrowLeft, Send, Search, Star, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function SendMoney() {
-  const { balance, contacts, sendMoney, setView, addNotification } = useWallet();
+  const { balance, contacts, sendMoney, addNotification } = useWallet();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1); // 1: Select Contact, 2: Enter Amount, 3: Confirm
   const [selectedContact, setSelectedContact] = useState(null);
   const [amount, setAmount] = useState('');
@@ -37,7 +39,7 @@ export default function SendMoney() {
     
     if (sendMoney(selectedContact.name, parseFloat(amount), description)) {
       setLoading(false);
-      setView('dashboard');
+      navigate('/dashboard');
       // Reset form
       setStep(1);
       setSelectedContact(null);
@@ -59,7 +61,7 @@ export default function SendMoney() {
       <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <button 
-            onClick={() => setView('dashboard')}
+            onClick={() => navigate('/dashboard')}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-6 h-6" />
@@ -183,7 +185,7 @@ export default function SendMoney() {
             Amount
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl">$</span>
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl">₹</span>
             <input
               type="text"
               value={amount}
@@ -206,7 +208,7 @@ export default function SendMoney() {
                 onClick={() => setAmount(quickAmount.toString())}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded-lg transition-colors"
               >
-                ${quickAmount}
+                ₹{quickAmount}
               </button>
             ))}
           </div>
