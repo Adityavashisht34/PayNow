@@ -21,8 +21,13 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers("/user/**").permitAll()
-                        .anyRequest().authenticated()
-                );
+                        .requestMatchers("/wallet/**").permitAll() // Allow wallet endpoints
+                        .requestMatchers("/actuator/**").permitAll() // Allow actuator endpoints
+                        .requestMatchers("/error").permitAll() // Allow error endpoints
+                        .anyRequest().permitAll() // Allow all requests for demo
+                )
+                .httpBasic(httpBasic -> httpBasic.disable()) // Disable HTTP Basic Auth
+                .formLogin(formLogin -> formLogin.disable()); // Disable form login
 
         return http.build();
     }
@@ -32,22 +37,22 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("http://localhost:3000"); // Add React dev server
         config.addAllowedHeader("*");
 
-        // Explicitly allow these methods instead of "*"
+        // Explicitly allow these methods
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
         config.addAllowedMethod("PUT");
-        config.addAllowedMethod("PATCH");  // <--- Important
+        config.addAllowedMethod("PATCH");
         config.addAllowedMethod("DELETE");
-        config.addAllowedMethod("OPTIONS"); // <--- Required for preflight
+        config.addAllowedMethod("OPTIONS");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
