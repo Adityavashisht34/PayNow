@@ -6,7 +6,7 @@ import {
   Phone, 
   Mail, 
   Shield, 
-  CreditCard,
+  CreditCard, 
   LogOut,
   Edit2,
   Settings
@@ -98,7 +98,7 @@ export default function Profile() {
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <button
+        <button 
           onClick={() => navigate('/dashboard')}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
@@ -110,9 +110,9 @@ export default function Profile() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white">
         <div className="flex items-center space-x-4">
           <div className="relative">
-            <img
-              src={user.avatar}
-              alt={user.name}
+            <img 
+              src={user.avatar} 
+              alt={user.name} 
               className="w-20 h-20 rounded-full border-4 border-white"
             />
             <button className="absolute bottom-0 right-0 bg-white text-blue-600 p-2 rounded-full hover:bg-gray-100 transition-colors">
@@ -133,7 +133,7 @@ export default function Profile() {
             <section.icon className="w-6 h-6 text-gray-600" />
             <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
           </div>
-
+          
           <div className="space-y-3">
             {section.items.map((item, itemIndex) => (
               <div key={itemIndex} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
@@ -144,7 +144,7 @@ export default function Profile() {
                 <div className="flex items-center space-x-2">
                   <span className="text-gray-600">{item.value}</span>
                   {item.action && (
-                    <button
+                    <button 
                       onClick={item.action}
                       className="text-blue-600 hover:text-blue-700"
                     >
@@ -185,7 +185,7 @@ export default function Profile() {
                   />
                   {errors.newPassword && <p className="text-red-500 text-sm mt-1">{errors.newPassword}</p>}
                 </div>
-
+                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Confirm Password

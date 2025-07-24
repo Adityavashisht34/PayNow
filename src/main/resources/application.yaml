@@ -3,3 +3,37 @@ spring:
     mongodb:
       database: paymentDBDev
       uri: mongodb+srv://admin:admin@paymentdbdev.rjnuxoc.mongodb.net/?retryWrites=true&w=majority&appName=PaymentDBDev
+  
+  # Email Configuration (Gmail SMTP)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: donotreplypayementwallet@gmail.com
+    password: thil juis aggt ehzr
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+
+# Twilio Configuration - FIXED CREDENTIALS
+twilio:
+  account:
+    sid: AC213cd97d961bce0b5fd4c97d914cf612
+  auth:
+    token: 8c72cfa594b85c40aa614a974cf18fd0
+  phone:
+    number: +15754688134
+
+server:
+  port: 8080
+
+# Logging configuration for debugging
+logging:
+  level:
+    com.payment.wallet: DEBUG
+    com.twilio: DEBUG
+    org.springframework.security: DEBUG

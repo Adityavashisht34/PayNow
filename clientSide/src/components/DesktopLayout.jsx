@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import NotificationSystem from './NotificationSystem';
-import {
-  Home,
-  Send,
-  Download,
-  Clock,
-  User,
+import { 
+  Home, 
+  Send, 
+  Download, 
+  Clock, 
+  User, 
   LogOut,
   Bell,
   Settings,
@@ -83,9 +83,9 @@ export default function DesktopLayout() {
         {/* User Info */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <img
-              src={user.avatar}
-              alt={user.name}
+            <img 
+              src={user.avatar} 
+              alt={user.name} 
               className="w-12 h-12 rounded-full"
             />
             <div className="flex-1 min-w-0">
@@ -138,7 +138,7 @@ export default function DesktopLayout() {
             >
               <span className="font-medium">Switch to Mobile View</span>
             </button>
-            <button
+            <button 
               onClick={logout}
               className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
             >
@@ -162,17 +162,17 @@ export default function DesktopLayout() {
                 {getPageDescription(currentPath)}
               </p>
             </div>
-
+            
             <div className="flex items-center space-x-4">
               <button className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                 <Bell className="w-6 h-6" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-
+              
               <div className="flex items-center space-x-3">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
+                <img 
+                  src={user.avatar} 
+                  alt={user.name} 
                   className="w-8 h-8 rounded-full"
                 />
                 <div className="hidden md:block">

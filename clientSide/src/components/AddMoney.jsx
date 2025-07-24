@@ -44,19 +44,19 @@ export default function AddMoney() {
     if (!validateAmount()) return;
 
     setLoading(true);
-
+    
     try {
       console.log('🚀 Sending OTP for add money...');
       console.log('User ID:', user.id);
       console.log('User Email:', user.email);
       console.log('User Phone:', user.phone);
       console.log('Purpose: ADD_MONEY');
-
+      
       // Send OTP for add money transaction
       const otpResponse = await walletApi.sendTransactionOTP(user.id, 'ADD_MONEY');
-
+      
       console.log('📧 OTP Response:', otpResponse);
-
+      
       if (otpResponse.success) {
         setShowOTPModal(true);
         addNotification({
@@ -88,35 +88,35 @@ export default function AddMoney() {
 
   const handleOTPVerify = async (otpCode) => {
     setOtpLoading(true);
-
+    
     try {
       console.log('🔐 Verifying OTP for add money...');
       console.log('User ID:', user.id);
       console.log('Amount:', parseFloat(amount));
       console.log('OTP Code:', otpCode);
-
+      
       const response = await walletApi.addMoneyWithOTP({
         userId: user.id,
         amount: parseFloat(amount),
         description: description || 'Balance added',
         otpCode: otpCode
       });
-
+      
       console.log('💰 Add Money Response:', response);
-
+      
       if (response.success) {
         setShowOTPModal(false);
-
+        
         // Reload user data to get updated balance
         await loadUserData();
-
+        
         addNotification({
           id: Date.now().toString(),
           type: 'success',
           message: `Successfully added ₹${amount} to your wallet`,
           timestamp: new Date()
         });
-
+        
         // Reset form and navigate
         setAmount('');
         setDescription('');
@@ -146,7 +146,7 @@ export default function AddMoney() {
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <button
+        <button 
           onClick={() => navigate('/dashboard')}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
@@ -220,7 +220,7 @@ export default function AddMoney() {
       {/* Payment Methods */}
       <div className="bg-white border border-gray-200 rounded-xl p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
-
+        
         <div className="space-y-3">
           <div className="border border-gray-200 rounded-lg p-4 bg-blue-50">
             <div className="flex items-center space-x-3">
@@ -231,7 +231,7 @@ export default function AddMoney() {
               </div>
             </div>
           </div>
-
+          
           <div className="border border-gray-200 rounded-lg p-4 opacity-50">
             <div className="flex items-center space-x-3">
               <Banknote className="w-6 h-6 text-gray-400" />
@@ -264,7 +264,7 @@ export default function AddMoney() {
           <div>
             <h4 className="font-medium text-amber-800">Testing Mode</h4>
             <p className="text-sm text-amber-700">
-              <strong>SMS Testing:</strong> Due to Twilio trial limitations, SMS can only be sent to verified numbers.
+              <strong>SMS Testing:</strong> Due to Twilio trial limitations, SMS can only be sent to verified numbers. 
               For testing, use +15005550006 or check console logs for OTP codes.
             </p>
             <p className="text-sm text-amber-700 mt-1">

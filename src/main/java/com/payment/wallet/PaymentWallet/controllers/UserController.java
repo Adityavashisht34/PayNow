@@ -26,18 +26,18 @@ public class UserController {
     public ResponseEntity<?> createUserAccountId() {
         try {
             String[] ids = userService.createUserAccountId();
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "IDs generated successfully");
             response.put("data", ids);
-
+            
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Server is busy, try again later!");
-
+            
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -48,18 +48,18 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
             User createdUser = userService.createUser(user);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "User registered successfully");
             response.put("data", createdUser);
-
+            
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
+            
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
     }
@@ -70,18 +70,18 @@ public class UserController {
     public ResponseEntity<?> findUser(@RequestBody User user) {
         try {
             User foundUser = userService.loginWithPassword(user.getEmail(), user.getPassword());
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Login successful");
             response.put("data", foundUser);
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Invalid email or password");
-
+            
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
@@ -92,20 +92,20 @@ public class UserController {
         try {
             String emailOrMobile = request.get("emailOrMobile");
             String password = request.get("password");
-
+            
             User user = userService.loginWithPassword(emailOrMobile, password);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Login successful");
             response.put("data", user);
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
+            
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
@@ -115,19 +115,19 @@ public class UserController {
     public ResponseEntity<?> sendLoginOTP(@RequestBody Map<String, String> request) {
         try {
             String emailOrMobile = request.get("emailOrMobile");
-
+            
             boolean sent = userService.sendLoginOTP(emailOrMobile);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", sent);
             response.put("message", sent ? "OTP sent successfully" : "Failed to send OTP");
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -138,20 +138,20 @@ public class UserController {
         try {
             String emailOrMobile = request.get("emailOrMobile");
             String otpCode = request.get("otpCode");
-
+            
             User user = userService.loginWithOTP(emailOrMobile, otpCode);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Login successful");
             response.put("data", user);
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
+            
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
@@ -161,19 +161,19 @@ public class UserController {
     public ResponseEntity<?> sendPasswordResetOTP(@RequestBody Map<String, String> request) {
         try {
             String emailOrMobile = request.get("emailOrMobile");
-
+            
             boolean sent = userService.sendPasswordResetOTP(emailOrMobile);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", sent);
             response.put("message", sent ? "Password reset OTP sent" : "Failed to send OTP");
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -185,19 +185,19 @@ public class UserController {
             String emailOrMobile = request.get("emailOrMobile");
             String otpCode = request.get("otpCode");
             String newPassword = request.get("newPassword");
-
+            
             boolean reset = userService.resetPasswordWithOTP(emailOrMobile, otpCode, newPassword);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", reset);
             response.put("message", reset ? "Password reset successfully" : "Failed to reset password");
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -208,19 +208,19 @@ public class UserController {
         try {
             String userId = request.get("userId");
             String purpose = request.get("purpose");
-
+            
             boolean sent = userService.sendUserActionOTP(userId, purpose);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", sent);
             response.put("message", sent ? "OTP sent successfully" : "Failed to send OTP");
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -232,19 +232,19 @@ public class UserController {
             String userId = request.get("userId");
             String otpCode = request.get("otpCode");
             String purpose = request.get("purpose");
-
+            
             boolean verified = userService.verifyUserActionOTP(userId, otpCode, purpose);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", verified);
             response.put("message", verified ? "OTP verified successfully" : "Invalid or expired OTP");
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -257,19 +257,19 @@ public class UserController {
             String userId = request.get("userId");
             String otpCode = request.get("otpCode");
             String newPassword = request.get("newPassword");
-
+            
             userService.updatePasswordWithOTP(userId, otpCode, newPassword);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Password updated successfully");
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -281,20 +281,20 @@ public class UserController {
         try {
             String email = request.get("email");
             String newPassword = request.get("newPassword");
-
+            
             // For legacy support, we'll find user by email and update password
             // In production, this should require OTP verification
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Password updated successfully");
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "User not found");
-
+            
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
@@ -304,18 +304,18 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable String userId) {
         try {
             User user = userService.findUserById(userId);
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "User found");
             response.put("data", user);
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "User not found");
-
+            
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
@@ -325,18 +325,18 @@ public class UserController {
     public ResponseEntity<?> getAllUsers() {
         try {
             List<User> users = userService.getAllUsers();
-
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Users retrieved successfully");
             response.put("data", users);
-
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Failed to retrieve users");
-
+            
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
