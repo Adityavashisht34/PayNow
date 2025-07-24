@@ -13,11 +13,10 @@ export default function SignUp() {
     firstName: '', 
     lastName: '', 
     email: '', 
-    password: '', 
+
     mobile: '' 
   });
   const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -58,14 +57,9 @@ export default function SignUp() {
 
         const registerResponse = await userApi.register(userData);
 
-        if (registerResponse.success) {
-          // Step 3: Auto login after successful signup
-          const success = await login(formData.email, formData.password);
-          if (success) {
-            navigate('/dashboard');
-          } else {
-            setErrors({ email: 'Login failed after signup' });
-          }
+          if (registerResponse.success) {
+          // Step 3: Redirect to signin page after successful signup
+          navigate('/signin');
         }
       }
 
@@ -181,30 +175,6 @@ export default function SignUp() {
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={handleChange}
-                className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.password ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
-          </div>
 
           <button
             type="submit"

@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-// Simple API base URL
-const API_URL = import.meta.env.VITE_APP_URL;
 
-// Simple API functions for users
+const API_URL = "http://localhost:8080";
+
+
 export const userApi = {
-  // Get user IDs
+  
   generateIds: async () => {
     try {
       const response = await axios.get(`${API_URL}/user/`);

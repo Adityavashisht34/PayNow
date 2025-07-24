@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "https://paynow-ruby.vercel.app/")
+@CrossOrigin(origins = "https://localhost:5173/")
 public class UserController {
 
     @Autowired
