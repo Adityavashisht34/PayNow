@@ -8,7 +8,7 @@ import OTPModal from '../components/OTPModal';
 export default function EnhancedSignIn() {
   const { login } = useWallet();
   const navigate = useNavigate();
-
+  
   const [loginMethod, setLoginMethod] = useState('password'); // 'password' or 'otp'
   const [formData, setFormData] = useState({ emailOrMobile: '', password: '' });
   const [errors, setErrors] = useState({});
@@ -20,7 +20,7 @@ export default function EnhancedSignIn() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-
+    
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -28,9 +28,9 @@ export default function EnhancedSignIn() {
 
   const handlePasswordLogin = async (e) => {
     e.preventDefault();
-
+    
     if (!formData.emailOrMobile || !formData.password) {
-      setErrors({
+      setErrors({ 
         emailOrMobile: !formData.emailOrMobile ? 'Email or mobile is required' : '',
         password: !formData.password ? 'Password is required' : ''
       });
@@ -41,7 +41,7 @@ export default function EnhancedSignIn() {
 
     try {
       const response = await userApi.loginWithPassword(formData.emailOrMobile, formData.password);
-
+      
       if (response.success && response.data) {
         const success = await login(response.data.email, formData.password);
         if (success) {
@@ -57,7 +57,7 @@ export default function EnhancedSignIn() {
 
   const handleOTPLogin = async (e) => {
     e.preventDefault();
-
+    
     if (!formData.emailOrMobile) {
       setErrors({ emailOrMobile: 'Email or mobile is required' });
       return;
@@ -67,7 +67,7 @@ export default function EnhancedSignIn() {
 
     try {
       const response = await userApi.sendLoginOTP(formData.emailOrMobile);
-
+      
       if (response.success) {
         setShowOTPModal(true);
       } else {
@@ -85,7 +85,7 @@ export default function EnhancedSignIn() {
 
     try {
       const response = await userApi.loginWithOTP(formData.emailOrMobile, otpCode);
-
+      
       if (response.success && response.data) {
         // For OTP login, we'll use a special login method
         const userData = {
@@ -96,10 +96,10 @@ export default function EnhancedSignIn() {
           avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
           isAuthenticated: true
         };
-
+        
         // Store user data directly
         localStorage.setItem('user', JSON.stringify(userData));
-
+        
         // Update context
         const success = await login(response.data.email, 'otp-login');
         if (success) {
@@ -134,8 +134,8 @@ export default function EnhancedSignIn() {
           <button
             onClick={() => setLoginMethod('password')}
             className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-md transition-colors ${
-              loginMethod === 'password'
-                ? 'bg-white text-blue-600 shadow-sm'
+              loginMethod === 'password' 
+                ? 'bg-white text-blue-600 shadow-sm' 
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
@@ -145,8 +145,8 @@ export default function EnhancedSignIn() {
           <button
             onClick={() => setLoginMethod('otp')}
             className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-md transition-colors ${
-              loginMethod === 'otp'
-                ? 'bg-white text-blue-600 shadow-sm'
+              loginMethod === 'otp' 
+                ? 'bg-white text-blue-600 shadow-sm' 
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
@@ -221,8 +221,8 @@ export default function EnhancedSignIn() {
 
         {loginMethod === 'password' && (
           <div className="text-center mt-4">
-            <Link
-              to="/forgot-password"
+            <Link 
+              to="/forgot-password" 
               className="text-blue-600 hover:text-blue-700 text-sm font-medium"
             >
               Forgot Password?
@@ -233,7 +233,7 @@ export default function EnhancedSignIn() {
         <p className="text-sm text-center mt-6 text-gray-600">
           Don't have an account? <Link to="/signup" className="text-blue-600 font-semibold hover:text-blue-700">Sign Up</Link>
         </p>
-
+        
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-500">Demo: john.doe@example.com / password123</p>
         </div>

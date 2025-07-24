@@ -86,7 +86,7 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <button
+        <button 
           onClick={() => navigate('/dashboard')}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
@@ -113,7 +113,7 @@ export default function Settings() {
             <section.icon className="w-6 h-6 text-gray-600" />
             <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
           </div>
-
+          
           <div className="space-y-4">
             {section.items.map((item, itemIndex) => (
               <div key={itemIndex} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
@@ -123,7 +123,7 @@ export default function Settings() {
                     <div className="flex items-center space-x-2">
                       <span className="text-gray-600">{item.value}</span>
                       {item.action && (
-                        <button
+                        <button 
                           onClick={item.action}
                           className="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
                         >
@@ -147,7 +147,7 @@ export default function Settings() {
           <CreditCard className="w-6 h-6 text-blue-600" />
           <h3 className="text-lg font-semibold text-gray-800">Quick Actions</h3>
         </div>
-
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <button
             onClick={() => navigate('/profile')}
@@ -156,7 +156,7 @@ export default function Settings() {
             <h4 className="font-medium text-gray-800">Edit Profile</h4>
             <p className="text-sm text-gray-500">Update your personal information</p>
           </button>
-
+          
           <button
             onClick={() => navigate('/history')}
             className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all text-left"

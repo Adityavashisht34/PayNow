@@ -57,7 +57,7 @@ function WalletProvider({ children }) {
             avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
             favorite: false
           }));
-
+        
         setContacts(userContacts);
       }
     } catch (error) {
@@ -70,7 +70,7 @@ function WalletProvider({ children }) {
   // Load user data (balance, transactions) from API
   const loadUserData = async (userId = user.id) => {
     if (!userId) return;
-
+    
     setLoading(true);
     try {
       // Load user balance
@@ -120,18 +120,18 @@ function WalletProvider({ children }) {
         // User data is already set from OTP verification
         const userData = JSON.parse(localStorage.getItem('user'));
         setUser(userData);
-
+        
         // Load user data after login
         setTimeout(() => {
           loadUserData(userData.id);
         }, 100);
-
+        
         return true;
       }
 
       // Handle regular password login
       const response = await userApi.login({ email, password });
-
+      
       if (response.success && response.data) {
         const userData = {
           id: response.data.userId,
@@ -141,15 +141,15 @@ function WalletProvider({ children }) {
           avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
           isAuthenticated: true
         };
-
+        
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
-
+        
         // Load user data after login
         setTimeout(() => {
           loadUserData(userData.id);
         }, 100);
-
+        
         return true;
       }
       return false;
@@ -204,7 +204,7 @@ function WalletProvider({ children }) {
             message: `Successfully sent ₹${amount} to ${recipientName}`,
             timestamp: new Date()
           });
-
+          
           return true;
         }
       } catch (error) {
@@ -240,7 +240,7 @@ function WalletProvider({ children }) {
             message: `Successfully added ₹${amount} to your wallet`,
             timestamp: new Date()
           });
-
+          
           return true;
         }
       } catch (error) {
@@ -259,7 +259,7 @@ function WalletProvider({ children }) {
   // Simple notification function
   const addNotification = (notification) => {
     setNotifications(prev => [notification, ...prev]);
-
+    
     // Auto remove after 5 seconds
     setTimeout(() => {
       setNotifications(prev => prev.filter(n => n.id !== notification.id));
@@ -287,7 +287,7 @@ function WalletProvider({ children }) {
     layoutMode,
     notifications,
     loading,
-
+    
     // Functions
     login,
     logout,
