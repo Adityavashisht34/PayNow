@@ -3,8 +3,7 @@ spring:
     mongodb:
       database: paymentDBDev
       uri: mongodb+srv://admin:admin@paymentdbdev.rjnuxoc.mongodb.net/?retryWrites=true&w=majority&appName=PaymentDBDev
-  
-  # Email Configuration (Gmail SMTP)
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -19,7 +18,7 @@ spring:
           ssl:
             trust: smtp.gmail.com
 
-# Twilio Configuration - FIXED CREDENTIALS
+
 twilio:
   account:
     sid: AC213cd97d961bce0b5fd4c97d914cf612
@@ -31,7 +30,7 @@ twilio:
 server:
   port: 8080
 
-# Logging configuration for debugging
+
 logging:
   level:
     com.payment.wallet: DEBUG

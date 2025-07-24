@@ -37,7 +37,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173");
-        config.addAllowedOrigin("http://localhost:3000"); // Add React dev server
+        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedHeader("*");
 
         // Explicitly allow these methods

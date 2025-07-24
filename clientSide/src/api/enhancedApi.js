@@ -1,11 +1,10 @@
 import axios from 'axios';
 
-// Single service API base URL
 const API_URL = 'http://localhost:8080';
 
-// Enhanced User API with OTP support
+
 export const userApi = {
-  // Generate user IDs
+
   generateIds: async () => {
     try {
       const response = await axios.get(`${API_URL}/user/`);
@@ -15,7 +14,7 @@ export const userApi = {
     }
   },
 
-  // Register new user
+
   register: async (userData) => {
     try {
       const response = await axios.post(`${API_URL}/user/save-user`, userData);
@@ -25,7 +24,6 @@ export const userApi = {
     }
   },
 
-  // Login with password (legacy)
   login: async (credentials) => {
     try {
       const response = await axios.post(`${API_URL}/user/find-user`, credentials);
@@ -35,7 +33,6 @@ export const userApi = {
     }
   },
 
-  // Enhanced login with email/mobile and password
   loginWithPassword: async (emailOrMobile, password) => {
     try {
       const response = await axios.post(`${API_URL}/user/login-password`, {
@@ -48,7 +45,7 @@ export const userApi = {
     }
   },
 
-  // Send login OTP
+
   sendLoginOTP: async (emailOrMobile) => {
     try {
       const response = await axios.post(`${API_URL}/user/send-login-otp`, {
@@ -60,7 +57,7 @@ export const userApi = {
     }
   },
 
-  // Login with OTP
+
   loginWithOTP: async (emailOrMobile, otpCode) => {
     try {
       const response = await axios.post(`${API_URL}/user/login-otp`, {
@@ -73,7 +70,7 @@ export const userApi = {
     }
   },
 
-  // Send password reset OTP
+
   sendPasswordResetOTP: async (emailOrMobile) => {
     try {
       const response = await axios.post(`${API_URL}/user/send-reset-otp`, {
@@ -85,7 +82,7 @@ export const userApi = {
     }
   },
 
-  // Reset password with OTP
+
   resetPassword: async (emailOrMobile, otpCode, newPassword) => {
     try {
       const response = await axios.post(`${API_URL}/user/reset-password`, {
@@ -99,7 +96,7 @@ export const userApi = {
     }
   },
 
-  // Send action OTP (for profile changes, etc.)
+
   sendActionOTP: async (userId, purpose) => {
     try {
       const response = await axios.post(`${API_URL}/user/send-action-otp`, {
