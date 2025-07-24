@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/wallet")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://paynow-ruby.vercel.app/")
 public class WalletController {
 
     @Autowired
