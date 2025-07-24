@@ -55,9 +55,7 @@ export const validateRegistrationForm = (formData) => {
     errors.email = 'Please enter a valid email address';
   }
   
-  if (!isValidPassword(formData.password)) {
-    errors.password = 'Password must be at least 6 characters';
-  }
+  // Password validation removed for OTP-only login
   
   if (!isValidMobile(formData.mobile)) {
     errors.mobile = 'Mobile number must be at least 10 digits';
