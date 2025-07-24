@@ -36,11 +36,13 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
+
+        // Allow local dev and deployed frontend
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://localhost:3000");
-        config.addAllowedHeader("*");
+        config.addAllowedOrigin("https://paynow-ruby.vercel.app/");
 
-        // Explicitly allow these methods
+        config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
         config.addAllowedMethod("PUT");
@@ -53,6 +55,7 @@ public class SecurityConfig {
 
         return new CorsFilter(source);
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
