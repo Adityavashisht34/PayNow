@@ -40,7 +40,7 @@ public class SecurityConfig {
         // Allow local dev and deployed frontend
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://localhost:3000");
-        config.addAllowedOrigin("https://paynow-ruby.vercel.app/");
+        config.addAllowedOrigin("https://paynow-ruby.vercel.app");
         config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");

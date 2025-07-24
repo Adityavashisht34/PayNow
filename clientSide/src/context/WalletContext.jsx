@@ -273,7 +273,7 @@ function WalletProvider({ children }) {
     sendMoney,
     addMoney,
     setView,
-    setLayoutMode: setLayoutManually, // override manual setter
+    setLayoutMode: setLayoutManually, 
     addNotification,
     removeNotification,
     loadUserData,
