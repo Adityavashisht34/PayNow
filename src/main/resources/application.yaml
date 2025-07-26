@@ -1,14 +1,14 @@
 spring:
   data:
     mongodb:
-      database: paymentDBDev
-      uri: mongodb+srv://admin:admin@paymentdbdev.rjnuxoc.mongodb.net/?retryWrites=true&w=majority&appName=PaymentDBDev
+      database: 
+      uri: 
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: donotreplypayementwallet@gmail.com
-    password: thil juis aggt ehzr
+    username: 
+    password: 
     properties:
       mail:
         smtp:
@@ -21,11 +21,11 @@ spring:
 
 twilio:
   account:
-    sid: AC213cd97d961bce0b5fd4c97d914cf612
+    sid: 
   auth:
-    token: 8c72cfa594b85c40aa614a974cf18fd0
+    token: 
   phone:
-    number: +15754688134
+    number: 
 
 server:
   port: 8080
