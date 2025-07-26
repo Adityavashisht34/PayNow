@@ -128,11 +128,3 @@ Backend tests are located under `src/test/java/com/payment/wallet/PaymentWallet/
 mvn test
 ```
 
-Frontend testing setup is not included by default.
-
-## Contact and Support
-For issues or questions, please contact the project maintainer.
-
----
-
-This README provides a comprehensive overview and setup instructions for the PaymentWalletApplication project.
