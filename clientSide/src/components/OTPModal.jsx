@@ -11,18 +11,17 @@ export default function OTPModal({
   loading = false 
 }) {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const [timeLeft, setTimeLeft] = useState(300);
   const [resendLoading, setResendLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (isOpen) {
-      // Reset state when modal opens
+
       setOtp(['', '', '', '', '', '']);
       setTimeLeft(300);
       setError('');
-      
-      // Focus first input
+
       setTimeout(() => {
         const firstInput = document.getElementById('otp-0');
         if (firstInput) firstInput.focus();
@@ -45,9 +44,8 @@ export default function OTPModal({
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-      setError(''); // Clear error when user types
+      setError('');
 
-      // Auto-focus next input
       if (value && index < 5) {
         const nextInput = document.getElementById(`otp-${index + 1}`);
         if (nextInput) nextInput.focus();
@@ -60,7 +58,6 @@ export default function OTPModal({
       const prevInput = document.getElementById(`otp-${index - 1}`);
       if (prevInput) {
         prevInput.focus();
-        // Clear the previous input
         const newOtp = [...otp];
         newOtp[index - 1] = '';
         setOtp(newOtp);
@@ -91,7 +88,6 @@ export default function OTPModal({
         await onVerify(otpCode);
       } catch (error) {
         setError('Invalid OTP. Please try again.');
-        // Clear OTP on error
         setOtp(['', '', '', '', '', '']);
         const firstInput = document.getElementById('otp-0');
         if (firstInput) firstInput.focus();
@@ -105,8 +101,8 @@ export default function OTPModal({
     setResendLoading(true);
     try {
       await onResend();
-      setTimeLeft(300); // Reset timer
-      setOtp(['', '', '', '', '', '']); // Clear OTP
+      setTimeLeft(300);
+      setOtp(['', '', '', '', '', '']);
       setError('');
       
       // Focus first input

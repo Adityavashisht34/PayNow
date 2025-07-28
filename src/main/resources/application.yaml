@@ -1,14 +1,18 @@
 spring:
   data:
     mongodb:
-      database: 
-      uri: 
+      database:
+      uri:
 
   mail:
     host: smtp.gmail.com
-    port: 587
-    username: 
-    password: 
+    port:
+    username:
+    password:
+
+      database: 
+      uri: 
+
     properties:
       mail:
         smtp:
@@ -21,11 +25,11 @@ spring:
 
 twilio:
   account:
-    sid: 
+    sid:
   auth:
-    token: 
+    token:
   phone:
-    number: 
+    number:
 
 server:
   port: 8080

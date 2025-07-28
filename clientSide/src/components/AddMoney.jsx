@@ -264,8 +264,7 @@ export default function AddMoney() {
           <div>
             <h4 className="font-medium text-amber-800">Testing Mode</h4>
             <p className="text-sm text-amber-700">
-              <strong>SMS Testing:</strong> Due to Twilio trial limitations, SMS can only be sent to verified numbers. 
-              For testing, use +15005550006 or check console logs for OTP codes.
+              <strong>SMS Testing:</strong> Due to Twilio trial limitations, SMS can only be sent to verified numbers.
             </p>
             <p className="text-sm text-amber-700 mt-1">
               <strong>Email Testing:</strong> OTPs are sent to real email addresses and also logged in console.

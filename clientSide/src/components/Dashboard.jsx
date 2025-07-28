@@ -55,12 +55,6 @@ export default function Dashboard() {
       label: 'Send Money',
       action: () => navigate('/send'),
       color: 'bg-blue-500 hover:bg-blue-600'
-    },
-    {
-      icon: Download,
-      label: 'Receive',
-      action: () => navigate('/receive'),
-      color: 'bg-purple-500 hover:bg-purple-600'
     }
   ];
 
@@ -111,21 +105,20 @@ export default function Dashboard() {
 
       <div>
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="flex gap-6">
           {quickActions.map((action, index) => (
             <button
               key={index}
               onClick={action.action}
-              className={`${action.color} text-white p-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg`}
+              className={`${action.color} text-white p-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg flex-1`}
             >
               <action.icon className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm font-medium block">{action.label}</span>
+              <span className="text-sm font-medium block text-center">{action.label}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Monthly Overview */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-green-50 border border-green-200 rounded-xl p-4">
           <div className="flex items-center justify-between">
@@ -152,7 +145,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Transactions */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-800">Recent Transactions</h3>

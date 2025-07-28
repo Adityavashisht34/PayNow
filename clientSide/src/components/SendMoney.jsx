@@ -21,7 +21,6 @@ export default function SendMoney() {
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
 
-  // Load contacts when component mounts
   useEffect(() => {
     loadContacts();
   }, []);
@@ -45,7 +44,7 @@ export default function SendMoney() {
     const value = e.target.value.replace(/[^\d.]/g, '');
     if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
       setAmount(value);
-      // Clear error when user types
+
       if (errors.amount) {
         setErrors(prev => ({ ...prev, amount: '' }));
       }

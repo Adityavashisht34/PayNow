@@ -64,52 +64,6 @@ public class UserController {
         }
     }
 
-    // Login with password
-    @Transactional
-    @PostMapping("/find-user")
-    public ResponseEntity<?> findUser(@RequestBody User user) {
-        try {
-            User foundUser = userService.loginWithPassword(user.getEmail(), user.getPassword());
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Login successful");
-            response.put("data", foundUser);
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "Invalid email or password");
-            
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
-    }
-
-    // Enhanced login with email/mobile and password
-    @PostMapping("/login-password")
-    public ResponseEntity<?> loginWithPassword(@RequestBody Map<String, String> request) {
-        try {
-            String emailOrMobile = request.get("emailOrMobile");
-            String password = request.get("password");
-            
-            User user = userService.loginWithPassword(emailOrMobile, password);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Login successful");
-            response.put("data", user);
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
-    }
-
     // Send login OTP
     @PostMapping("/send-login-otp")
     public ResponseEntity<?> sendLoginOTP(@RequestBody Map<String, String> request) {
@@ -153,52 +107,6 @@ public class UserController {
             response.put("message", e.getMessage());
             
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
-    }
-
-    // Send password reset OTP
-    @PostMapping("/send-reset-otp")
-    public ResponseEntity<?> sendPasswordResetOTP(@RequestBody Map<String, String> request) {
-        try {
-            String emailOrMobile = request.get("emailOrMobile");
-            
-            boolean sent = userService.sendPasswordResetOTP(emailOrMobile);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", sent);
-            response.put("message", sent ? "Password reset OTP sent" : "Failed to send OTP");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-    }
-
-    // Reset password with OTP
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
-        try {
-            String emailOrMobile = request.get("emailOrMobile");
-            String otpCode = request.get("otpCode");
-            String newPassword = request.get("newPassword");
-            
-            boolean reset = userService.resetPasswordWithOTP(emailOrMobile, otpCode, newPassword);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", reset);
-            response.put("message", reset ? "Password reset successfully" : "Failed to reset password");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
@@ -246,56 +154,6 @@ public class UserController {
             response.put("message", e.getMessage());
             
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-    }
-
-    // Update password with OTP
-    @Transactional
-    @PatchMapping("/update-password-otp")
-    public ResponseEntity<?> updatePasswordWithOTP(@RequestBody Map<String, String> request) {
-        try {
-            String userId = request.get("userId");
-            String otpCode = request.get("otpCode");
-            String newPassword = request.get("newPassword");
-            
-            userService.updatePasswordWithOTP(userId, otpCode, newPassword);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Password updated successfully");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-    }
-
-    // Legacy update password (without OTP)
-    @Transactional
-    @PatchMapping("/update-password")
-    public ResponseEntity<?> updatePassword(@RequestBody Map<String, String> request) {
-        try {
-            String email = request.get("email");
-            String newPassword = request.get("newPassword");
-            
-            // For legacy support, we'll find user by email and update password
-            // In production, this should require OTP verification
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Password updated successfully");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "User not found");
-            
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 

@@ -11,7 +11,6 @@ export default function BottomNavigation() {
     { id: 'dashboard', icon: Home, label: 'Home', path: '/dashboard' },
     { id: 'add-money', icon: Plus, label: 'Add', path: '/add-money' },
     { id: 'send', icon: Send, label: 'Send', path: '/send' },
-    { id: 'receive', icon: Download, label: 'Receive', path: '/receive' },
     { id: 'history', icon: Clock, label: 'History', path: '/history' },
     { id: 'profile', icon: User, label: 'Profile', path: '/profile' }
   ];

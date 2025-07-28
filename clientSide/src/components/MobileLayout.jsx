@@ -20,12 +20,6 @@ export default function MobileLayout() {
         <div className="max-w-md mx-auto bg-white min-h-screen shadow-lg">
           <div className="p-6 pb-20">
             <Outlet />
-            <button
-              onClick={() => setLayoutMode('desktop')}
-              className="mt-4 w-full flex items-center justify-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-            >
-              Switch to Desktop View
-            </button>
           </div>
           <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md">
             <BottomNavigation />
