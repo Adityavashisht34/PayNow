@@ -30,7 +30,6 @@ export default function DesktopLayout() {
     { id: 'dashboard', icon: Home, label: 'Dashboard', path: '/dashboard' },
     { id: 'add-money', icon: Plus, label: 'Add Money', path: '/add-money' },
     { id: 'send', icon: Send, label: 'Send Money', path: '/send' },
-    { id: 'receive', icon: Download, label: 'Receive Money', path: '/receive' },
     { id: 'history', icon: Clock, label: 'Transaction History', path: '/history' },
     { id: 'profile', icon: User, label: 'Profile', path: '/profile' }
   ];
@@ -42,7 +41,6 @@ export default function DesktopLayout() {
       case '/dashboard': return 'Dashboard';
       case '/add-money': return 'Add Money';
       case '/send': return 'Send Money';
-      case '/receive': return 'Receive Money';
       case '/history': return 'Transaction History';
       case '/profile': return 'Profile';
       case '/settings': return 'Settings';
@@ -55,7 +53,6 @@ export default function DesktopLayout() {
       case '/dashboard': return 'Overview of your financial activity';
       case '/add-money': return 'Add money to your wallet';
       case '/send': return 'Transfer money to contacts';
-      case '/receive': return 'Request payments from others';
       case '/history': return 'View all your transactions';
       case '/profile': return 'Manage your account settings';
       case '/settings': return 'App preferences and settings';
@@ -74,7 +71,7 @@ export default function DesktopLayout() {
               <span className="text-white font-bold text-lg">P</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">PayWallet</h1>
+              <h1 className="text-xl font-bold text-gray-800">PayNow</h1>
               <p className="text-sm text-gray-500">Digital Payments</p>
             </div>
           </div>
@@ -131,12 +128,6 @@ export default function DesktopLayout() {
             >
               <Settings className="w-5 h-5 text-gray-400" />
               <span className="font-medium">Settings</span>
-            </button>
-            <button
-              onClick={() => setLayoutMode('mobile')}
-              className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-            >
-              <span className="font-medium">Switch to Mobile View</span>
             </button>
             <button 
               onClick={logout}

@@ -17,18 +17,6 @@ export default function Settings() {
 
   const settingsSections = [
     {
-      title: 'Display',
-      icon: Monitor,
-      items: [
-        {
-          label: 'Layout Mode',
-          value: layoutMode === 'desktop' ? 'Desktop' : 'Mobile',
-          action: toggleLayoutMode,
-          description: 'Switch between desktop and mobile layouts'
-        }
-      ]
-    },
-    {
       title: 'Preferences',
       icon: Globe,
       items: [
@@ -43,9 +31,7 @@ export default function Settings() {
           description: 'Default currency for transactions'
         },
         {
-          label: 'Theme',
-          value: 'Light',
-          description: 'App appearance theme'
+
         }
       ]
     },
@@ -64,22 +50,6 @@ export default function Settings() {
           description: 'Receive updates via email'
         }
       ]
-    },
-    {
-      title: 'Security',
-      icon: Shield,
-      items: [
-        {
-          label: 'Two-Factor Authentication',
-          value: 'Disabled',
-          description: 'Add extra security to your account'
-        },
-        {
-          label: 'Biometric Login',
-          value: 'Not Available',
-          description: 'Use fingerprint or face ID'
-        }
-      ]
     }
   ];
 
@@ -93,18 +63,6 @@ export default function Settings() {
           <ArrowLeft className="w-6 h-6" />
         </button>
         <h2 className="text-2xl font-bold text-gray-800">Settings</h2>
-      </div>
-
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white">
-        <div className="flex items-center space-x-4">
-          <div className="bg-white/20 p-3 rounded-full">
-            <Monitor className="w-8 h-8" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold">App Settings</h3>
-            <p className="text-purple-100">Customize your PayWallet experience</p>
-          </div>
-        </div>
       </div>
 
       {settingsSections.map((section, index) => (
@@ -168,7 +126,7 @@ export default function Settings() {
       </div>
 
       <div className="bg-gray-50 rounded-xl p-6 text-center">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">PayWallet v1.0.0</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">PayNow v1.0.0</h3>
         <p className="text-sm text-gray-500">
           Your secure digital payment solution
         </p>
