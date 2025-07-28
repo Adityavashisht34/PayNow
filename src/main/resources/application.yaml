@@ -9,6 +9,10 @@ spring:
     port:
     username:
     password:
+
+      database: 
+      uri: 
+
     properties:
       mail:
         smtp:
