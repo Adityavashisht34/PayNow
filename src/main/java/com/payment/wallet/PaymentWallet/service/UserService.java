@@ -4,56 +4,119 @@ import com.payment.wallet.PaymentWallet.entity.User;
 import com.payment.wallet.PaymentWallet.repo.UserRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
 
     @Autowired
-    UserRepo userRepo;
+    private UserRepo userRepo;
+    
     @Autowired
     private PasswordEncoder passwordEncoder;
-    public ResponseEntity<?> createUserAccountId(){
+    
+    @Autowired
+    private OTPService otpService;
+
+    // Generate new user and account IDs
+    public String[] createUserAccountId() {
         ObjectId userId = new ObjectId();
         ObjectId accountId = new ObjectId();
-        String[] idArr = {userId.toHexString(),accountId.toHexString()};
-        return new ResponseEntity<>(idArr, HttpStatus.CREATED);
+        return new String[]{userId.toHexString(), accountId.toHexString()};
     }
 
-    public ResponseEntity<?> createUser(User user){
-        try {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setMobile(passwordEncoder.encode(user.getMobile()));
-           return new ResponseEntity<>(userRepo.save(user), HttpStatus.CREATED) ;
+    // Create a new user
+    public User createUser(User user) {
+        Optional<User> existingUser = userRepo.findByEmailOrMobile(user.getEmail(), user.getMobile());
+        if (existingUser.isPresent()) {
+            throw new RuntimeException("User with this email or mobile already exists");
         }
-        catch (Exception e){
-            return new ResponseEntity<>("Creation Failed, Try Again.", HttpStatus.CONFLICT);
-        }
+        user.setCreatedAt(LocalDateTime.now());
+        user.setStatus("ACTIVE");
+        
+        return userRepo.save(user);
     }
 
-    public ResponseEntity<?> findUserByEmail(String email, String password){
-        Optional<User> dbUser = userRepo.findByEmail(email);
-        if(dbUser.isPresent()){
-            if(passwordEncoder.matches(password,dbUser.get().getPassword())){
-                return new ResponseEntity<>(dbUser.get(), HttpStatus.OK);
+
+    // Send OTP for login
+    public boolean sendLoginOTP(String emailOrMobile) {
+        Optional<User> dbUser = userRepo.findByEmailOrMobile(emailOrMobile, emailOrMobile);
+        
+        if (dbUser.isPresent()) {
+            User user = dbUser.get();
+            return otpService.sendOTP(user.getUserId(), user.getEmail(), user.getMobile(), "LOGIN");
+        }
+        
+        throw new RuntimeException("User not found");
+    }
+
+    // Verify OTP and login
+    public User loginWithOTP(String emailOrMobile, String otpCode) {
+        Optional<User> dbUser = userRepo.findByEmailOrMobile(emailOrMobile, emailOrMobile);
+        
+        if (dbUser.isPresent()) {
+            User user = dbUser.get();
+            
+            if (otpService.verifyOTP(user.getUserId(), otpCode, "LOGIN")) {
+                user.updateLastLogin();
+                userRepo.save(user);
+                return user;
             }
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        
+        throw new RuntimeException("Invalid OTP or user not found");
     }
 
-    public ResponseEntity<?> updatePassword(String email,String password){
-        Optional<User> dbUser = userRepo.findByEmail(email);
-        if(dbUser.isPresent()){
-            dbUser.get().setPassword(passwordEncoder.encode(password));
-            userRepo.save(dbUser.get());
-            return new ResponseEntity<>(HttpStatus.OK);
+
+    // Send OTP for user actions (profile changes, etc.)
+    public boolean sendUserActionOTP(String userId, String purpose) {
+        Optional<User> dbUser = userRepo.findById(userId);
+        
+        if (dbUser.isPresent()) {
+            User user = dbUser.get();
+            return otpService.sendOTP(user.getUserId(), user.getEmail(), user.getMobile(), purpose);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        
+        throw new RuntimeException("User not found");
+    }
+
+    // Verify user action OTP
+    public boolean verifyUserActionOTP(String userId, String otpCode, String purpose) {
+        return otpService.verifyOTP(userId, otpCode, purpose);
+    }
+
+    // Find user by ID
+    public User findUserById(String userId) {
+        Optional<User> user = userRepo.findById(userId);
+        if (user.isPresent()) {
+            return user.get();
+        }
+        throw new RuntimeException("User not found");
+    }
+
+    // Get all users (for contacts)
+    public List<User> getAllUsers() {
+        return userRepo.findAll();
+    }
+
+    // Update user password with OTP verification
+    public void updatePasswordWithOTP(String userId, String otpCode, String newPassword) {
+        if (otpService.verifyOTP(userId, otpCode, "PASSWORD_RESET")) {
+            Optional<User> dbUser = userRepo.findById(userId);
+            if (dbUser.isPresent()) {
+                User user = dbUser.get();
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepo.save(user);
+            } else {
+                throw new RuntimeException("User not found");
+            }
+        } else {
+            throw new RuntimeException("Invalid or expired OTP");
+        }
     }
 }

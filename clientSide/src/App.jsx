@@ -8,7 +8,6 @@ import DesktopLayout from './components/DesktopLayout';
 import MobileLayout from './components/MobileLayout';
 import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
-import ReceiveMoney from './components/ReceiveMoney';
 import SendMoney from './components/SendMoney';
 import AddMoney from './components/AddMoney';
 import TransactionHistory from './components/TransactionHistory';
@@ -36,7 +35,6 @@ function AppContent() {
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="receive" element={<ReceiveMoney />} />
           <Route path="send" element={<SendMoney />} />
           <Route path="add-money" element={<AddMoney />} />
           <Route path="history" element={<TransactionHistory />} />
@@ -48,7 +46,6 @@ function AppContent() {
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="receive" element={<ReceiveMoney />} />
           <Route path="send" element={<SendMoney />} />
           <Route path="add-money" element={<AddMoney />} />
           <Route path="history" element={<TransactionHistory />} />

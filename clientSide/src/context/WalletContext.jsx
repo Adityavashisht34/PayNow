@@ -4,7 +4,6 @@ import { userApi, walletApi } from '../api/enhancedApi';
 const WalletContext = createContext();
 
 function WalletProvider({ children }) {
-  // Simple state variables - no dispatcher!
   const [user, setUser] = useState({
     id: null,
     name: '',
@@ -14,15 +13,33 @@ function WalletProvider({ children }) {
     isAuthenticated: false
   });
 
-  const [balance, setBalance] = useState(0); // Start with 0 balance
+  const [balance, setBalance] = useState(0);
   const [currentView, setCurrentView] = useState('dashboard');
   const [layoutMode, setLayoutMode] = useState('desktop');
+  const [autoLayout, setAutoLayout] = useState(true); // New: to allow auto/manual override
   const [notifications, setNotifications] = useState([]);
-  const [transactions, setTransactions] = useState([]); // Start with empty transactions
-  const [contacts, setContacts] = useState([]); // Start with empty contacts
+  const [transactions, setTransactions] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Load user from localStorage on startup
+  // Automatically switch layout based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (!autoLayout) return; // Skip if manually overridden
+      const width = window.innerWidth;
+      if (width < 768) {
+        setLayoutMode('mobile');
+      } else {
+        setLayoutMode('desktop');
+      }
+    };
+
+    handleResize(); // Set on load
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [autoLayout]);
+
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem('user');
@@ -30,7 +47,6 @@ function WalletProvider({ children }) {
         const parsedUser = JSON.parse(savedUser);
         if (parsedUser && parsedUser.id) {
           setUser(parsedUser);
-          // Load user data after setting user
           setTimeout(() => {
             loadUserData(parsedUser.id);
           }, 100);
@@ -41,14 +57,12 @@ function WalletProvider({ children }) {
     }
   }, []);
 
-  // Load all users as contacts when user logs in
   const loadContacts = async () => {
     try {
       const response = await userApi.getAllUsers();
       if (response.success) {
-        // Convert users to contacts format, excluding current user
         const userContacts = response.data
-          .filter(u => u.userId !== user.id) // Don't include current user
+          .filter(u => u.userId !== user.id)
           .map(u => ({
             id: u.userId,
             name: `${u.firstName} ${u.lastName}`,
@@ -62,32 +76,26 @@ function WalletProvider({ children }) {
       }
     } catch (error) {
       console.error('Error loading contacts:', error);
-      // Keep contacts empty if API fails
       setContacts([]);
     }
   };
 
-  // Load user data (balance, transactions) from API
   const loadUserData = async (userId = user.id) => {
     if (!userId) return;
 
     setLoading(true);
     try {
-      // Load user balance
       const balanceResponse = await walletApi.getBalance(userId);
       if (balanceResponse.success) {
         setBalance(balanceResponse.data.balance);
       }
 
-      // Load user transactions
       const transactionsResponse = await walletApi.getTransactions(userId);
       if (transactionsResponse.success) {
-        // Convert backend transactions to frontend format
         const formattedTransactions = transactionsResponse.data.map(t => ({
           id: t.transactionId,
           type: t.fromUserId === userId ? 'sent' : 'received',
           amount: t.amount,
-          // Use the enhanced user names from backend
           from: t.fromUserName || (t.fromUserId === 'SYSTEM' ? 'System' : 'Unknown User'),
           to: t.toUserName || 'Unknown User',
           date: new Date(t.createdAt),
@@ -98,12 +106,10 @@ function WalletProvider({ children }) {
         setTransactions(formattedTransactions);
       }
 
-      // Load contacts (other users)
       await loadContacts();
 
     } catch (error) {
       console.error('Error loading user data:', error);
-      // Set default values if API fails
       setBalance(0);
       setTransactions([]);
       setContacts([]);
@@ -112,24 +118,15 @@ function WalletProvider({ children }) {
     }
   };
 
-  // Simple login function
   const login = async (email, password) => {
     try {
-      // Handle OTP login case
       if (password === 'otp-login') {
-        // User data is already set from OTP verification
         const userData = JSON.parse(localStorage.getItem('user'));
         setUser(userData);
-
-        // Load user data after login
-        setTimeout(() => {
-          loadUserData(userData.id);
-        }, 100);
-
+        setTimeout(() => loadUserData(userData.id), 100);
         return true;
       }
 
-      // Handle regular password login
       const response = await userApi.login({ email, password });
 
       if (response.success && response.data) {
@@ -144,11 +141,7 @@ function WalletProvider({ children }) {
 
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
-
-        // Load user data after login
-        setTimeout(() => {
-          loadUserData(userData.id);
-        }, 100);
+        setTimeout(() => loadUserData(userData.id), 100);
 
         return true;
       }
@@ -159,7 +152,6 @@ function WalletProvider({ children }) {
     }
   };
 
-  // Simple logout function
   const logout = () => {
     setUser({
       id: null,
@@ -176,35 +168,27 @@ function WalletProvider({ children }) {
     setContacts([]);
   };
 
-  // Legacy send money function (for backward compatibility)
   const sendMoney = async (recipientName, amount, description) => {
     if (amount <= balance && amount > 0) {
       try {
-        // Find recipient by name
         const recipient = contacts.find(c => c.name === recipientName);
-        if (!recipient) {
-          throw new Error('Recipient not found');
-        }
+        if (!recipient) throw new Error('Recipient not found');
 
-        // Call API to send money (legacy method without OTP)
         const response = await walletApi.sendMoney({
           fromUserId: user.id,
           toUserEmail: recipient.email,
-          amount: amount,
-          description: description
+          amount,
+          description
         });
 
         if (response.success) {
-          // Reload user data to get updated balance and transactions
           await loadUserData();
-
           addNotification({
             id: Date.now().toString(),
             type: 'success',
             message: `Successfully sent ₹${amount} to ${recipientName}`,
             timestamp: new Date()
           });
-
           return true;
         }
       } catch (error) {
@@ -220,27 +204,23 @@ function WalletProvider({ children }) {
     return false;
   };
 
-  // Legacy add money function (for backward compatibility)
   const addMoney = async (amount, description = 'Balance added') => {
     if (amount > 0) {
       try {
         const response = await walletApi.addMoney({
           userId: user.id,
-          amount: amount,
-          description: description
+          amount,
+          description
         });
 
         if (response.success) {
-          // Reload user data to get updated balance and transactions
           await loadUserData();
-
           addNotification({
             id: Date.now().toString(),
             type: 'success',
             message: `Successfully added ₹${amount} to your wallet`,
             timestamp: new Date()
           });
-
           return true;
         }
       } catch (error) {
@@ -256,45 +236,44 @@ function WalletProvider({ children }) {
     return false;
   };
 
-  // Simple notification function
   const addNotification = (notification) => {
     setNotifications(prev => [notification, ...prev]);
-
-    // Auto remove after 5 seconds
     setTimeout(() => {
       setNotifications(prev => prev.filter(n => n.id !== notification.id));
     }, 5000);
   };
 
-  // Simple remove notification function
   const removeNotification = (id) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  // Simple view setter
   const setView = (view) => {
     setCurrentView(view);
   };
 
-  // All the values we want to share
+  // Manual override function
+  const setLayoutManually = (mode) => {
+    setAutoLayout(false); // disable auto switching
+    setLayoutMode(mode);
+  };
+
   const value = {
-    // State
     user,
     balance,
     transactions,
     contacts,
     currentView,
     layoutMode,
+    autoLayout,
     notifications,
     loading,
 
-    // Functions
     login,
     logout,
     sendMoney,
     addMoney,
     setView,
-    setLayoutMode,
+    setLayoutMode: setLayoutManually, 
     addNotification,
     removeNotification,
     loadUserData,

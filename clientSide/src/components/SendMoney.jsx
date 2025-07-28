@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { formatCurrency } from '../utils/formatters';
-import { ArrowLeft, Send, Search, Star, User } from 'lucide-react';
+import { ArrowLeft, Send, Search, Star, User, RefreshCw, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { isValidAmount } from '../utils/simpleValidation';
+import { walletApi } from '../api/enhancedApi';
+import OTPModal from './OTPModal';
 
 export default function SendMoney() {
-  const { balance, contacts, sendMoney, addNotification } = useWallet();
+  const { balance, contacts, user, addNotification, loadContacts, loadUserData } = useWallet();
   const navigate = useNavigate();
   const [step, setStep] = useState(1); // 1: Select Contact, 2: Enter Amount, 3: Confirm
   const [selectedContact, setSelectedContact] = useState(null);
@@ -13,10 +16,25 @@ export default function SendMoney() {
   const [description, setDescription] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [refreshingContacts, setRefreshingContacts] = useState(false);
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+
+  useEffect(() => {
+    loadContacts();
+  }, []);
+
+  const refreshContacts = async () => {
+    setRefreshingContacts(true);
+    await loadContacts();
+    setRefreshingContacts(false);
+  };
 
   const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    contact.phone.includes(searchTerm)
+    contact.phone.includes(searchTerm) ||
+    contact.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const favoriteContacts = filteredContacts.filter(contact => contact.favorite);
@@ -26,34 +44,117 @@ export default function SendMoney() {
     const value = e.target.value.replace(/[^\d.]/g, '');
     if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
       setAmount(value);
+
+      if (errors.amount) {
+        setErrors(prev => ({ ...prev, amount: '' }));
+      }
     }
   };
 
   const quickAmounts = [25, 50, 100, 200];
 
-  const handleSend = async () => {
+  const validateAmount = () => {
+    const validation = isValidAmount(amount, balance);
+    if (!validation.valid) {
+      setErrors({ amount: validation.message });
+      return false;
+    }
+    setErrors({});
+    return true;
+  };
+
+  const handleSendMoney = async () => {
+    if (!validateAmount()) return;
+
     setLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    if (sendMoney(selectedContact.name, parseFloat(amount), description)) {
-      setLoading(false);
-      navigate('/dashboard');
-      // Reset form
-      setStep(1);
-      setSelectedContact(null);
-      setAmount('');
-      setDescription('');
-    } else {
-      setLoading(false);
+    try {
+      // Send OTP for transaction
+      const otpResponse = await walletApi.sendTransactionOTP(user.id, 'TRANSACTION');
+      
+      if (otpResponse.success) {
+        setShowOTPModal(true);
+        addNotification({
+          id: Date.now().toString(),
+          type: 'info',
+          message: 'OTP sent to your email and mobile number',
+          timestamp: new Date()
+        });
+      } else {
+        addNotification({
+          id: Date.now().toString(),
+          type: 'error',
+          message: 'Failed to send OTP. Please try again.',
+          timestamp: new Date()
+        });
+      }
+    } catch (error) {
+      console.error('Send OTP error:', error);
       addNotification({
         id: Date.now().toString(),
         type: 'error',
-        message: 'Insufficient balance or invalid amount',
+        message: error.message || 'Failed to send OTP',
         timestamp: new Date()
       });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleOTPVerify = async (otpCode) => {
+    setOtpLoading(true);
+    
+    try {
+      const response = await walletApi.sendMoneyWithOTP({
+        fromUserId: user.id,
+        toUserEmail: selectedContact.email,
+        amount: parseFloat(amount),
+        description: description || 'Money transfer',
+        otpCode: otpCode
+      });
+      
+      if (response.success) {
+        setShowOTPModal(false);
+        
+        // Reload user data to get updated balance
+        await loadUserData();
+        
+        addNotification({
+          id: Date.now().toString(),
+          type: 'success',
+          message: `Successfully sent ₹${amount} to ${selectedContact.name}`,
+          timestamp: new Date()
+        });
+        
+        // Reset form and navigate
+        setStep(1);
+        setSelectedContact(null);
+        setAmount('');
+        setDescription('');
+        navigate('/dashboard');
+      } else {
+        addNotification({
+          id: Date.now().toString(),
+          type: 'error',
+          message: response.message || 'Transaction failed',
+          timestamp: new Date()
+        });
+      }
+    } catch (error) {
+      console.error('Send money error:', error);
+      addNotification({
+        id: Date.now().toString(),
+        type: 'error',
+        message: error.message || 'Transaction failed. Please try again.',
+        timestamp: new Date()
+      });
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    return walletApi.sendTransactionOTP(user.id, 'TRANSACTION');
   };
 
   if (step === 1) {
@@ -67,6 +168,13 @@ export default function SendMoney() {
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h2 className="text-2xl font-bold text-gray-800">Send Money</h2>
+          <button
+            onClick={refreshContacts}
+            disabled={refreshingContacts}
+            className="ml-auto p-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+          >
+            <RefreshCw className={`w-5 h-5 text-blue-600 ${refreshingContacts ? 'animate-spin' : ''}`} />
+          </button>
         </div>
 
         <div className="relative">
@@ -104,7 +212,7 @@ export default function SendMoney() {
                     />
                     <div className="text-left">
                       <p className="font-semibold text-gray-800">{contact.name}</p>
-                      <p className="text-sm text-gray-500">{contact.phone}</p>
+                      <p className="text-sm text-gray-500">{contact.email}</p>
                     </div>
                   </div>
                 </button>
@@ -113,11 +221,27 @@ export default function SendMoney() {
           </div>
         )}
 
-        {otherContacts.length > 0 && (
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">All Contacts</h3>
-            <div className="space-y-3">
-              {otherContacts.map((contact) => (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            {favoriteContacts.length > 0 ? 'All Contacts' : 'Contacts'}
+          </h3>
+          <div className="space-y-3">
+            {otherContacts.length === 0 && favoriteContacts.length === 0 ? (
+              <div className="text-center py-8">
+                <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500">No contacts found</p>
+                <p className="text-sm text-gray-400">
+                  {searchTerm ? 'Try a different search term' : 'Register more users to see them here'}
+                </p>
+                <button
+                  onClick={refreshContacts}
+                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Refresh Contacts
+                </button>
+              </div>
+            ) : (
+              otherContacts.map((contact) => (
                 <button
                   key={contact.id}
                   onClick={() => {
@@ -134,21 +258,14 @@ export default function SendMoney() {
                     />
                     <div className="text-left">
                       <p className="font-semibold text-gray-800">{contact.name}</p>
-                      <p className="text-sm text-gray-500">{contact.phone}</p>
+                      <p className="text-sm text-gray-500">{contact.email}</p>
                     </div>
                   </div>
                 </button>
-              ))}
-            </div>
+              ))
+            )}
           </div>
-        )}
-
-        {filteredContacts.length === 0 && searchTerm && (
-          <div className="text-center py-8">
-            <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">No contacts found</p>
-          </div>
-        )}
+        </div>
       </div>
     );
   }
@@ -175,7 +292,7 @@ export default function SendMoney() {
             />
             <div>
               <p className="font-semibold text-gray-800">{selectedContact.name}</p>
-              <p className="text-sm text-gray-500">{selectedContact.phone}</p>
+              <p className="text-sm text-gray-500">{selectedContact.email}</p>
             </div>
           </div>
         </div>
@@ -191,9 +308,12 @@ export default function SendMoney() {
               value={amount}
               onChange={handleAmountChange}
               placeholder="0.00"
-              className="w-full pl-8 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-2xl text-center"
+              className={`w-full pl-8 pr-4 py-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-2xl text-center ${
+                errors.amount ? 'border-red-300' : 'border-gray-300'
+              }`}
             />
           </div>
+          {errors.amount && <p className="text-red-500 text-sm mt-1">{errors.amount}</p>}
           <p className="text-sm text-gray-500 mt-2">
             Available balance: {formatCurrency(balance)}
           </p>
@@ -227,9 +347,26 @@ export default function SendMoney() {
           />
         </div>
 
+        {/* OTP Security Notice */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-start space-x-3">
+            <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-blue-800">Secure Transaction</h4>
+              <p className="text-sm text-blue-700">
+                For your security, we'll send an OTP to verify this transaction.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <button
-          onClick={() => setStep(3)}
-          disabled={!amount || parseFloat(amount) <= 0 || parseFloat(amount) > balance}
+          onClick={() => {
+            if (validateAmount()) {
+              setStep(3);
+            }
+          }}
+          disabled={!amount || parseFloat(amount) <= 0}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
         >
           Continue
@@ -258,7 +395,7 @@ export default function SendMoney() {
             className="w-16 h-16 rounded-full mx-auto mb-3"
           />
           <h3 className="text-xl font-semibold text-gray-800">{selectedContact.name}</h3>
-          <p className="text-gray-500">{selectedContact.phone}</p>
+          <p className="text-gray-500">{selectedContact.email}</p>
         </div>
 
         <div className="border-t border-gray-200 pt-4">
@@ -284,7 +421,7 @@ export default function SendMoney() {
       </div>
 
       <button
-        onClick={handleSend}
+        onClick={handleSendMoney}
         disabled={loading}
         className="w-full bg-green-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2"
       >
@@ -293,10 +430,20 @@ export default function SendMoney() {
         ) : (
           <>
             <Send className="w-5 h-5" />
-            <span>Send Money</span>
+            <span>Send Money with OTP</span>
           </>
         )}
       </button>
+
+      <OTPModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onVerify={handleOTPVerify}
+        onResend={handleResendOTP}
+        title="Verify Money Transfer"
+        description={`Enter the OTP sent to your email and mobile to send ₹${amount} to ${selectedContact?.name}`}
+        loading={otpLoading}
+      />
     </div>
   );
 }

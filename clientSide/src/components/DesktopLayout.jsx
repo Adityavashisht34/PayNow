@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import NotificationSystem from './NotificationSystem';
-import {
-  Home,
-  Send,
-  Download,
-  Clock,
-  User,
+import { 
+  Home, 
+  Send, 
+  Download, 
+  Clock, 
+  User, 
   LogOut,
   Bell,
   Settings,
@@ -30,7 +30,6 @@ export default function DesktopLayout() {
     { id: 'dashboard', icon: Home, label: 'Dashboard', path: '/dashboard' },
     { id: 'add-money', icon: Plus, label: 'Add Money', path: '/add-money' },
     { id: 'send', icon: Send, label: 'Send Money', path: '/send' },
-    { id: 'receive', icon: Download, label: 'Receive Money', path: '/receive' },
     { id: 'history', icon: Clock, label: 'Transaction History', path: '/history' },
     { id: 'profile', icon: User, label: 'Profile', path: '/profile' }
   ];
@@ -42,7 +41,6 @@ export default function DesktopLayout() {
       case '/dashboard': return 'Dashboard';
       case '/add-money': return 'Add Money';
       case '/send': return 'Send Money';
-      case '/receive': return 'Receive Money';
       case '/history': return 'Transaction History';
       case '/profile': return 'Profile';
       case '/settings': return 'Settings';
@@ -55,7 +53,6 @@ export default function DesktopLayout() {
       case '/dashboard': return 'Overview of your financial activity';
       case '/add-money': return 'Add money to your wallet';
       case '/send': return 'Transfer money to contacts';
-      case '/receive': return 'Request payments from others';
       case '/history': return 'View all your transactions';
       case '/profile': return 'Manage your account settings';
       case '/settings': return 'App preferences and settings';
@@ -74,7 +71,7 @@ export default function DesktopLayout() {
               <span className="text-white font-bold text-lg">P</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">PayWallet</h1>
+              <h1 className="text-xl font-bold text-gray-800">PayNow</h1>
               <p className="text-sm text-gray-500">Digital Payments</p>
             </div>
           </div>
@@ -83,9 +80,9 @@ export default function DesktopLayout() {
         {/* User Info */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <img
-              src={user.avatar}
-              alt={user.name}
+            <img 
+              src={user.avatar} 
+              alt={user.name} 
               className="w-12 h-12 rounded-full"
             />
             <div className="flex-1 min-w-0">
@@ -132,13 +129,7 @@ export default function DesktopLayout() {
               <Settings className="w-5 h-5 text-gray-400" />
               <span className="font-medium">Settings</span>
             </button>
-            <button
-              onClick={() => setLayoutMode('mobile')}
-              className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-            >
-              <span className="font-medium">Switch to Mobile View</span>
-            </button>
-            <button
+            <button 
               onClick={logout}
               className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
             >
@@ -162,17 +153,17 @@ export default function DesktopLayout() {
                 {getPageDescription(currentPath)}
               </p>
             </div>
-
+            
             <div className="flex items-center space-x-4">
               <button className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                 <Bell className="w-6 h-6" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-
+              
               <div className="flex items-center space-x-3">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
+                <img 
+                  src={user.avatar} 
+                  alt={user.name} 
                   className="w-8 h-8 rounded-full"
                 />
                 <div className="hidden md:block">

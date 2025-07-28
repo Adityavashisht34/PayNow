@@ -1,5 +1,38 @@
 spring:
   data:
     mongodb:
-      database: paymentDBDev
-      uri: mongodb+srv://admin:admin@paymentdbdev.rjnuxoc.mongodb.net/?retryWrites=true&w=majority&appName=PaymentDBDev
+      database:
+      uri:
+
+  mail:
+    host: smtp.gmail.com
+    port:
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+
+
+twilio:
+  account:
+    sid:
+  auth:
+    token:
+  phone:
+    number:
+
+server:
+  port: 8080
+
+
+logging:
+  level:
+    com.payment.wallet: DEBUG
+    com.twilio: DEBUG
+    org.springframework.security: DEBUG

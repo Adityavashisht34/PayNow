@@ -3,7 +3,7 @@ import { useWallet } from '../context/WalletContext';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
 export default function NotificationSystem() {
-  const { notifications, dispatch } = useWallet();
+  const { notifications, removeNotification } = useWallet();
 
   if (notifications.length === 0) return null;
 
@@ -46,7 +46,7 @@ export default function NotificationSystem() {
               <p className="text-sm font-medium">{notification.message}</p>
             </div>
             <button
-              onClick={() => dispatch({ type: 'REMOVE_NOTIFICATION', payload: notification.id })}
+              onClick={() => removeNotification(notification.id)}
               className="text-gray-400 hover:text-gray-600"
             >
               <X className="w-4 h-4" />
