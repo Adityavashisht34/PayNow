@@ -24,45 +24,6 @@ export default function Profile() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const changePassword = async (e) => {
-    e.preventDefault();
-
-    // Simple validation
-    const newErrors = {};
-    if (!isValidPassword(newPassword)) {
-      newErrors.newPassword = "Password must be at least 6 characters";
-    }
-    if (newPassword !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await userApi.updatePassword({
-        email: user.email,
-        newPassword: newPassword
-      });
-
-      if (response.success) {
-        alert("Password updated successfully");
-        setPasswordChange(false);
-        setNewPassword('');
-        setConfirmPassword('');
-        setErrors({});
-      }
-    } catch (error) {
-      console.error("Password update failed:", error);
-      alert(error.message || "Failed to update password");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -76,13 +37,6 @@ export default function Profile() {
         { label: 'Full Name', value: user.name, icon: User },
         { label: 'Email', value: user.email, icon: Mail },
         { label: 'Phone', value: user.phone, icon: Phone }
-      ]
-    },
-    {
-      title: 'Security',
-      icon: Shield,
-      items: [
-        { label: 'Change Password', value: '••••', icon: Shield, action: () => setPasswordChange(true) },
       ]
     },
     {
@@ -158,81 +112,7 @@ export default function Profile() {
         </div>
       ))}
 
-      {/* Simple Password Change Modal */}
-      {showPasswordChange && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Change Password</h3>
-            <form onSubmit={changePassword}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    New Password
-                  </label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => {
-                      setNewPassword(e.target.value);
-                      if (errors.newPassword) {
-                        setErrors(prev => ({ ...prev, newPassword: '' }));
-                      }
-                    }}
-                    placeholder="Min 6 characters"
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.newPassword ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.newPassword && <p className="text-red-500 text-sm mt-1">{errors.newPassword}</p>}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value);
-                      if (errors.confirmPassword) {
-                        setErrors(prev => ({ ...prev, confirmPassword: '' }));
-                      }
-                    }}
-                    placeholder="Confirm Password"
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
-                </div>
-              </div>
-
-              <div className="flex space-x-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPasswordChange(false);
-                    setNewPassword('');
-                    setConfirmPassword('');
-                    setErrors({});
-                  }}
-                  className="flex-1 bg-gray-100 text-gray-800 py-3 px-4 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading || !newPassword || !confirmPassword}
-                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
-                >
-                  {loading ? 'Updating...' : 'Update Password'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+     
 
       <button
         onClick={handleLogout}
